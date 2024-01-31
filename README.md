@@ -1,2 +1,3 @@
-# chichalang
-Chicha Lang
+# didilang
+Didi Lang
+Developed by Racstan
