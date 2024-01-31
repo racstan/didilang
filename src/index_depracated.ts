@@ -133,16 +133,16 @@ function parse(tokens: Token[]): any[] {
 function interpret(ast: any[]): void {
   for (const statement of ast) {
     if (statement.type === 'assignment') {
-      variables[statement.variable] = interpretExpression(statement.expression);
+      variables[statement.variable] = interpretExpression(statement.expression, variables);
     } else if (statement.type === 'output') {
-      const expressionValue = interpretExpression(statement.expression);
+      const expressionValue = interpretExpression(statement.expression, variables);
       console.log(expressionValue);
     }
   }
   return;
 }
 
-function interpretExpression(expression: any[]): any {
+function interpretExpression(expression: any[], variables: {[key: string]: string | number}): any {
   let operands: (string | number)[] = [];
   let operators: string[] = [];
 
@@ -150,6 +150,9 @@ function interpretExpression(expression: any[]): any {
     if (token.type === 'number') {
       operands.push(Number(token.value));
     } else if (token.type === 'identifier') {
+      if (variables[token.value] === undefined) {
+        throw new Error(`Variable ${token.value} is not defined`);
+      }
       operands.push(variables[token.value]);
     } else if (token.type === 'string') {
       operands.push(token.value);

@@ -158,10 +158,7 @@ function interpretExpression(expression) {
                 if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
                     result = result + operands[i + 1];
                 }
-                else if (typeof result === 'string' && typeof operands[i + 1] === 'string') {
-                    result = result + operands[i + 1];
-                }
-                else {
+                else if (typeof result === 'string' || typeof operands[i + 1] === 'string') {
                     result = String(result) + String(operands[i + 1]);
                 }
                 break;
