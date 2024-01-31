@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+      "target": "ES2020",      // Target a newer JavaScript version for broader compatibility
+      "module": "commonjs",   // Keep the module system as commonjs
+      "lib": ["es2015","dom"],       // Include the ES2015 library for features like Number.isNaN()
+      "outDir": "dist",       // Output directory for compiled JavaScript
+      "strict": false         // Relax strict type checking if necessary
+    }
+  }
+  
