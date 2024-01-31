@@ -165,9 +165,7 @@ function interpretExpression(expression: any[]): any {
       case '+':
         if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
           result = (result as number) + (operands[i + 1] as number);
-        } else if (typeof result === 'string' && typeof operands[i + 1] === 'string') {
-          result = (result as string) + (operands[i + 1] as string);
-        } else {
+        } else if (typeof result === 'string' || typeof operands[i + 1] === 'string') {
           result = String(result) + String(operands[i + 1]);
         }
         break;

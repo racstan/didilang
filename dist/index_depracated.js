@@ -1,6 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const readline = require("readline");
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+let code = '';
 let variables = {};
 const didiDict = {
     // Keywords
@@ -20,11 +25,6 @@ const didiDict = {
     // Error message
     "Kya kar rhi hai tu": "Invalid syntax"
 };
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
-let code = '';
 console.log('Please enter your code: ');
 let isInputComplete = false;
 rl.on('line', (input) => {
@@ -125,7 +125,7 @@ function parse(tokens) {
 function interpret(ast) {
     for (const statement of ast) {
         if (statement.type === 'assignment') {
-            variables[statement.variable] = statement.value;
+            variables[statement.variable] = interpretExpression(statement.expression);
         }
         else if (statement.type === 'output') {
             const expressionValue = interpretExpression(statement.expression);
