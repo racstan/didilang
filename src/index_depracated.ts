@@ -1,4 +1,12 @@
 import * as readline from 'readline';
+
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
+let code = '';
 let variables: { [key: string]: any } = {};
 const didiDict: { [key: string]: string } = {
   // Keywords
@@ -20,13 +28,6 @@ const didiDict: { [key: string]: string } = {
   // Error message
   "Kya kar rhi hai tu": "Invalid syntax"
 };
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
-
-let code = '';
 
 console.log('Please enter your code: ');
 
