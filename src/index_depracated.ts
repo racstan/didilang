@@ -133,7 +133,7 @@ function parse(tokens: Token[]): any[] {
 function interpret(ast: any[]): void {
   for (const statement of ast) {
     if (statement.type === 'assignment') {
-      variables[statement.variable] = statement.value;
+      variables[statement.variable] = interpretExpression(statement.expression);
     } else if (statement.type === 'output') {
       const expressionValue = interpretExpression(statement.expression);
       console.log(expressionValue);
