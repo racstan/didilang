@@ -127,7 +127,7 @@ function parse(tokens: Token[]): any[] {
     }
   }
 
-  return ast;
+  return ast; 
 }
 
 function interpret(ast: any[]): void {
