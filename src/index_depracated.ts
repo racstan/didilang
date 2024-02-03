@@ -139,7 +139,7 @@ function interpret(ast: any[]): void {
       console.log(expressionValue);
     }
   }
-  return;
+  return;  
 } 
 
 function interpretExpression(expression: any[], variables: {[key: string]: string | number}): any {
