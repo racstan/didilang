@@ -201,5 +201,5 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
     }
   }
 
-  return result;
+  return result;  
 }
