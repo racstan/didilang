@@ -137,12 +137,15 @@ function interpret(ast: any[]): void {
       variables[statement.variable] = interpretExpression(statement.expression, variables);
     } else if (statement.type === 'output') {
       const expressionValue = interpretExpression(statement.expression, variables);
-      console.log(expressionValue);
+      if (expressionValue !== undefined) {
+        console.log(expressionValue);
+      } else {
+        console.error('Could not evaluate expression:', statement.expression);
+      }
     }
   }
-  return;  
-} 
-
+  return;
+}
 function interpretExpression(expression: any[], variables: {[key: string]: string | number}): any {
   let operands: (string | number)[] = [];
   let operators: string[] = [];
