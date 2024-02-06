@@ -130,7 +130,12 @@ function interpret(ast) {
         }
         else if (statement.type === 'output') {
             const expressionValue = interpretExpression(statement.expression, variables);
-            console.log(expressionValue);
+            if (expressionValue !== undefined) {
+                console.log(expressionValue);
+            }
+            else {
+                console.error('Could not evaluate expression:', statement.expression);
+            }
         }
     }
     return;
