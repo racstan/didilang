@@ -48,6 +48,7 @@ rl.on('close', () => {
     else {
         console.error('Input was not complete. Please make sure to end your code with "bye didi".');
     }
+    setTimeout(() => process.exit(), 5000);
 });
 function tokenize(code) {
     if (!didiDict) {
@@ -125,16 +126,16 @@ function parse(tokens) {
 function interpret(ast) {
     for (const statement of ast) {
         if (statement.type === 'assignment') {
-            variables[statement.variable] = interpretExpression(statement.expression);
+            variables[statement.variable] = interpretExpression(statement.expression, variables);
         }
         else if (statement.type === 'output') {
-            const expressionValue = interpretExpression(statement.expression);
+            const expressionValue = interpretExpression(statement.expression, variables);
             console.log(expressionValue);
         }
     }
     return;
 }
-function interpretExpression(expression) {
+function interpretExpression(expression, variables) {
     let operands = [];
     let operators = [];
     for (const token of expression) {
@@ -142,6 +143,9 @@ function interpretExpression(expression) {
             operands.push(Number(token.value));
         }
         else if (token.type === 'identifier') {
+            if (variables[token.value] === undefined) {
+                throw new Error(`Variable ${token.value} is not defined`);
+            }
             operands.push(variables[token.value]);
         }
         else if (token.type === 'string') {

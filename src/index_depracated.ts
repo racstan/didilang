@@ -53,6 +53,7 @@ rl.on('close', () => {
   } else {
     console.error('Input was not complete. Please make sure to end your code with "bye didi".');
   }
+  setTimeout(() => process.exit(), 5000);
 });
 
 interface Token {
