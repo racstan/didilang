@@ -156,7 +156,7 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
       }
       operands.push(variables[token.value]);
     } else if (token.type === 'string') {
-      operands.push(token.value);
+      operands.push(token.value.slice(1, -1));
     } else if (token.type === 'operator') {
       operators.push(token.value);
     }
