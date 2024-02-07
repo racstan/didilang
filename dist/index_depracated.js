@@ -112,13 +112,8 @@ function parse(tokens) {
                 currentStatement.expression.push(token);
             }
         }
-        else if (token.type === 'number' || token.type === 'operator') {
-            if (currentStatement.type === 'assignment' && !currentStatement.value) {
-                currentStatement.value = Number(token.value);
-            }
-            else {
-                currentStatement.expression.push(token);
-            }
+        else if (token.type === 'number' || token.type === 'operator' || token.type === 'string') {
+            currentStatement.expression.push(token);
         }
     }
     return ast;
