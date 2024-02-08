@@ -145,6 +145,7 @@ function interpret(ast: any[]): void {
   }
   return;
 }
+
 function interpretExpression(expression: any[], variables: {[key: string]: string | number}): any {
   let operands: (string | number)[] = [];
   let operators: string[] = [];
