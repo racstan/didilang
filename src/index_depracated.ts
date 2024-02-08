@@ -149,7 +149,7 @@ function interpret(ast: any[]): void {
 function interpretExpression(expression: any[], variables: {[key: string]: string | number}): any {
   let operands: (string | number)[] = [];
   let operators: string[] = [];
-
+  let result: string | number | boolean;
   for (const token of expression) {
     if (token.type === 'number') {
       operands.push(Number(token.value));
@@ -166,7 +166,7 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
   }
 
 
-  let result = operands[0];
+  result = operands[0];
 
   for (let i = 0; i < operators.length; i++) {
     switch (operators[i]) {
@@ -201,6 +201,12 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
         if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
           result = Math.pow(result as number, operands[i + 1] as number);
         }
+        break;
+      case '>':
+        result = operands[i] > operands[i + 1];
+        break;
+      case '<':
+        result = operands[i] < operands[i + 1];
         break;
       // handle other operators...
     }
