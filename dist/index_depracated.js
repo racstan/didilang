@@ -104,6 +104,10 @@ function parse(tokens) {
             currentStatement = { type: 'output', expression: [] };
             ast.push(currentStatement);
         }
+        else if (token.type === 'conditional') {
+            currentStatement = { type: 'conditional', condition: [], trueBranch: [], falseBranch: [] };
+            ast.push(currentStatement);
+        }
         else if (token.type === 'identifier') {
             if (currentStatement.type === 'assignment' && !currentStatement.variable) {
                 currentStatement.variable = token.value;
@@ -138,6 +142,7 @@ function interpret(ast) {
 function interpretExpression(expression, variables) {
     let operands = [];
     let operators = [];
+    let result;
     for (const token of expression) {
         if (token.type === 'number') {
             operands.push(Number(token.value));
@@ -155,7 +160,7 @@ function interpretExpression(expression, variables) {
             operators.push(token.value);
         }
     }
-    let result = operands[0];
+    result = operands[0];
     for (let i = 0; i < operators.length; i++) {
         switch (operators[i]) {
             case '+':
@@ -190,6 +195,12 @@ function interpretExpression(expression, variables) {
                 if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
                     result = Math.pow(result, operands[i + 1]);
                 }
+                break;
+            case '>':
+                result = operands[i] > operands[i + 1];
+                break;
+            case '<':
+                result = operands[i] < operands[i + 1];
                 break;
             // handle other operators...
         }
