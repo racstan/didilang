@@ -113,6 +113,9 @@ function parse(tokens: Token[]): any[] {
     } else if (token.type === 'print') {
       currentStatement = { type: 'output', expression: [] };
       ast.push(currentStatement);
+    } else if (token.type === 'conditional') {
+      currentStatement = { type: 'conditional', condition: [], trueBranch: [], falseBranch: [] };
+      ast.push(currentStatement);
     } else if (token.type === 'identifier') {
       if (currentStatement.type === 'assignment' && !currentStatement.variable) {
         currentStatement.variable = token.value;
