@@ -165,6 +165,7 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
     }
   }
 
+
   let result = operands[0];
 
   for (let i = 0; i < operators.length; i++) {
