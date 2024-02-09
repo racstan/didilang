@@ -82,8 +82,14 @@ function tokenize(code) {
         else if (/\/\/.*/.test(token.value)) {
             token.type = 'comment';
         }
-        else if (/==|<=|>=|!=|\+|-|\*|\/|%/.test(token.value)) {
-            token.type = 'operator';
+        else if (/==|<=|>=|!=/.test(token.value)) {
+            token.type = 'comparison_operator';
+        }
+        else if (/\+|-|\*|\/|%/.test(token.value)) {
+            token.type = 'arithmetic_operator';
+        }
+        else if (/=/.test(token.value)) {
+            token.type = 'assignment_operator';
         }
         else if (/\(|\)|\{|\}|,/.test(token.value)) { // removed semicolon from the regex
             token.type = 'delimiter';

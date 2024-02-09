@@ -195,7 +195,7 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
         if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
           result = (result as number) / (operands[i + 1] as number);
         }
-        break;
+        break;     
       case '%':
         if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
           result = (result as number) % (operands[i + 1] as number);
