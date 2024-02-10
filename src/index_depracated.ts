@@ -199,7 +199,7 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
       case '%':
         if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
           result = (result as number) % (operands[i + 1] as number);
-        }
+        }  
         break;
       case '**':
         if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
