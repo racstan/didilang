@@ -212,6 +212,24 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
       case '<':
         result = operands[i] < operands[i + 1];
         break;
+      case '==':
+          result = operands[i] == operands[i + 1];
+          break;
+      case '!=':
+          result = operands[i] != operands[i + 1];
+          break;
+      case '>=':
+          result = operands[i] >= operands[i + 1];
+          break;
+      case '<=':
+          result = operands[i] <= operands[i + 1];
+          break;
+      case '&&':
+          result = Boolean(operands[i]) && Boolean(operands[i + 1]);
+          break;
+      case '||':
+          result = Boolean(operands[i]) || Boolean(operands[i + 1]);
+          break;
       // handle other operators...
     }
   }
