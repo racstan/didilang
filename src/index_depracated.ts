@@ -39,7 +39,7 @@ rl.on('line', (input) => {
     isInputComplete = true;
     rl.close();
   }
-});
+}); 
 
 rl.on('close', () => {
   if (isInputComplete) {

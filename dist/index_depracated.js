@@ -101,29 +101,39 @@ function tokenize(code) {
 function parse(tokens) {
     const ast = [];
     let currentStatement = {};
+    let currentField = '';
     for (const token of tokens) {
         if (token.type === 'variable') {
             currentStatement = { type: 'assignment', variable: '', value: '', expression: [] };
             ast.push(currentStatement);
+            currentField = 'expression';
         }
         else if (token.type === 'print') {
             currentStatement = { type: 'output', expression: [] };
             ast.push(currentStatement);
+            currentField = 'expression';
         }
         else if (token.type === 'conditional') {
             currentStatement = { type: 'conditional', condition: [], trueBranch: [], falseBranch: [] };
             ast.push(currentStatement);
+            currentField = 'condition';
         }
         else if (token.type === 'identifier') {
             if (currentStatement.type === 'assignment' && !currentStatement.variable) {
                 currentStatement.variable = token.value;
             }
             else {
-                currentStatement.expression.push(token);
+                currentStatement[currentField].push(token);
             }
         }
         else if (token.type === 'number' || token.type === 'operator' || token.type === 'string') {
-            currentStatement.expression.push(token);
+            currentStatement[currentField].push(token);
+        }
+        else if (token.type === 'leftParen' || token.type === 'leftBrace') {
+            currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
+        }
+        else if (token.type === 'rightParen' || token.type === 'rightBrace') {
+            currentField = '';
         }
     }
     return ast;
@@ -207,6 +217,24 @@ function interpretExpression(expression, variables) {
                 break;
             case '<':
                 result = operands[i] < operands[i + 1];
+                break;
+            case '==':
+                result = operands[i] == operands[i + 1];
+                break;
+            case '!=':
+                result = operands[i] != operands[i + 1];
+                break;
+            case '>=':
+                result = operands[i] >= operands[i + 1];
+                break;
+            case '<=':
+                result = operands[i] <= operands[i + 1];
+                break;
+            case '&&':
+                result = Boolean(operands[i]) && Boolean(operands[i + 1]);
+                break;
+            case '||':
+                result = Boolean(operands[i]) || Boolean(operands[i + 1]);
                 break;
             // handle other operators...
         }
