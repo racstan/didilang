@@ -140,7 +140,7 @@ function parse(tokens: Token[]): any[] {
   }
 
   return ast; 
-}  
+}     
 
 function interpret(ast: any[]): void {
   for (const statement of ast) {
