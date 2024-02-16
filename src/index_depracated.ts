@@ -83,7 +83,8 @@ function tokenize(code: string): Token[] {
       token.type = didiDict[token.value];
     } else if (/^".*"$/.test(token.value)) {
       token.type = 'string';
-      token.value = JSON.parse(token.value); // unescape the escaped characters
+      // Remove the quotation marks from the start and end of the string
+      token.value = token.value.slice(1, -1);
     } else if (/[a-zA-Z_]\w*/.test(token.value)) {
       token.type = 'identifier';
     } else if (/\d+/.test(token.value)) {
