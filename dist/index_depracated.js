@@ -177,69 +177,58 @@ function interpretExpression(expression, variables) {
             operators.push(token.value);
         }
     }
-    result = operands[0];
-    for (let i = 0; i < operators.length; i++) {
+    let i = 0;
+    while (i < operators.length) {
+        let operand1 = operands[i];
+        let operand2 = operands[i + 1];
         switch (operators[i]) {
             case '+':
-                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
-                    result = operands[i] + operands[i + 1];
-                }
-                else {
-                    result = String(operands[i]) + String(operands[i + 1]);
-                }
+                result = Number(operand1) + Number(operand2);
                 break;
             case '-':
-                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
-                    result = operands[i] - operands[i + 1];
-                }
+                result = Number(operand1) - Number(operand2);
                 break;
             case '*':
-                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
-                    result = operands[i] * operands[i + 1];
-                }
+                result = Number(operand1) * Number(operand2);
                 break;
             case '/':
-                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
-                    result = operands[i] / operands[i + 1];
-                }
+                result = Number(operand1) / Number(operand2);
                 break;
             case '%':
-                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
-                    result = operands[i] % operands[i + 1];
-                }
+                result = Number(operand1) % Number(operand2);
                 break;
             case '**':
-                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
-                    result = Math.pow(operands[i], operands[i + 1]);
-                }
+                result = Math.pow(Number(operand1), Number(operand2));
                 break;
             case '>':
-                result = operands[i] > operands[i + 1];
+                result = Number(operand1) > Number(operand2);
                 break;
             case '<':
-                result = operands[i] < operands[i + 1];
+                result = Number(operand1) < Number(operand2);
                 break;
             case '==':
-                result = operands[i] == operands[i + 1];
+                result = operand1 == operand2;
                 break;
             case '!=':
-                result = operands[i] != operands[i + 1];
+                result = operand1 != operand2;
                 break;
             case '>=':
-                result = operands[i] >= operands[i + 1];
+                result = Number(operand1) >= Number(operand2);
                 break;
             case '<=':
-                result = operands[i] <= operands[i + 1];
+                result = Number(operand1) <= Number(operand2);
                 break;
             case '&&':
-                result = Boolean(operands[i]) && Boolean(operands[i + 1]);
+                result = Boolean(operand1) && Boolean(operand2);
                 break;
             case '||':
-                result = Boolean(operands[i]) || Boolean(operands[i + 1]);
+                result = Boolean(operand1) || Boolean(operand2);
                 break;
-            // handle other operators...
+            default:
+                throw new Error(`Operator ${operators[i]} is not supported`);
         }
-        operands[i + 1] = result;
+        operands.splice(i, 2, result);
+        operators.splice(i, 1);
     }
-    return result;
+    return operands[0];
 }
