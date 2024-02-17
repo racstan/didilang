@@ -160,7 +160,7 @@ function interpret(ast: any[]): void {
 }
 
 function interpretExpression(expression: any[], variables: {[key: string]: string | number}): any {
-  let operands: (string | number)[] = [];
+  let operands: (string | number | boolean)[] = [];
   let operators: string[] = [];
   let result: string | number | boolean;
   for (const token of expression) {
@@ -178,41 +178,40 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
     }
   }
 
-
   result = operands[0];
 
   for (let i = 0; i < operators.length; i++) {
     switch (operators[i]) {
       case '+':
-        if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-          result = (result as number) + (operands[i + 1] as number);
-        } else if (typeof result === 'string' || typeof operands[i + 1] === 'string') {
-          result = String(result) + String(operands[i + 1]);
+        if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+          result = (operands[i] as number) + (operands[i + 1] as number);
+        } else {
+          result = String(operands[i]) + String(operands[i + 1]);
         }
         break;
       case '-':
-        if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-          result = (result as number) - (operands[i + 1] as number);
+        if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+          result = (operands[i] as number) - (operands[i + 1] as number);
         }
         break;
       case '*':
-        if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-          result = (result as number) * (operands[i + 1] as number);
+        if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+          result = (operands[i] as number) * (operands[i + 1] as number);
         }
         break;
       case '/':
-        if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-          result = (result as number) / (operands[i + 1] as number);
+        if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+          result = (operands[i] as number) / (operands[i + 1] as number);
         }
-        break;     
+        break;
       case '%':
-        if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-          result = (result as number) % (operands[i + 1] as number);
-        }  
+        if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+          result = (operands[i] as number) % (operands[i + 1] as number);
+        }
         break;
       case '**':
-        if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-          result = Math.pow(result as number, operands[i + 1] as number);
+        if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+          result = Math.pow(operands[i] as number, operands[i + 1] as number);
         }
         break;
       case '>':
@@ -222,26 +221,27 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
         result = operands[i] < operands[i + 1];
         break;
       case '==':
-          result = operands[i] == operands[i + 1];
-          break;
+        result = operands[i] == operands[i + 1];
+        break;
       case '!=':
-          result = operands[i] != operands[i + 1];
-          break;
+        result = operands[i] != operands[i + 1];
+        break;
       case '>=':
-          result = operands[i] >= operands[i + 1];
-          break;
+        result = operands[i] >= operands[i + 1];
+        break;
       case '<=':
-          result = operands[i] <= operands[i + 1];
-          break;
+        result = operands[i] <= operands[i + 1];
+        break;
       case '&&':
-          result = Boolean(operands[i]) && Boolean(operands[i + 1]);
-          break;
+        result = Boolean(operands[i]) && Boolean(operands[i + 1]);
+        break;
       case '||':
-          result = Boolean(operands[i]) || Boolean(operands[i + 1]);
-          break;
+        result = Boolean(operands[i]) || Boolean(operands[i + 1]);
+        break;
       // handle other operators...
     }
+    operands[i + 1] = result;
   }
 
-  return result;       
+  return result;
 }
