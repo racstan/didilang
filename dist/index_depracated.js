@@ -181,36 +181,36 @@ function interpretExpression(expression, variables) {
     for (let i = 0; i < operators.length; i++) {
         switch (operators[i]) {
             case '+':
-                if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-                    result = result + operands[i + 1];
+                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+                    result = operands[i] + operands[i + 1];
                 }
-                else if (typeof result === 'string' || typeof operands[i + 1] === 'string') {
-                    result = String(result) + String(operands[i + 1]);
+                else {
+                    result = String(operands[i]) + String(operands[i + 1]);
                 }
                 break;
             case '-':
-                if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-                    result = result - operands[i + 1];
+                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+                    result = operands[i] - operands[i + 1];
                 }
                 break;
             case '*':
-                if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-                    result = result * operands[i + 1];
+                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+                    result = operands[i] * operands[i + 1];
                 }
                 break;
             case '/':
-                if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-                    result = result / operands[i + 1];
+                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+                    result = operands[i] / operands[i + 1];
                 }
                 break;
             case '%':
-                if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-                    result = result % operands[i + 1];
+                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+                    result = operands[i] % operands[i + 1];
                 }
                 break;
             case '**':
-                if (typeof result === 'number' && typeof operands[i + 1] === 'number') {
-                    result = Math.pow(result, operands[i + 1]);
+                if (typeof operands[i] === 'number' && typeof operands[i + 1] === 'number') {
+                    result = Math.pow(operands[i], operands[i + 1]);
                 }
                 break;
             case '>':
@@ -239,6 +239,7 @@ function interpretExpression(expression, variables) {
                 break;
             // handle other operators...
         }
+        operands[i + 1] = result;
     }
     return result;
 }
