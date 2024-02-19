@@ -100,7 +100,6 @@ function tokenize(code: string): Token[] {
     } else if (/\(|\)|\{|\}|,/.test(token.value)) { // removed semicolon from the regex
       token.type = 'delimiter';
     }
-  
     tokens.push(token);
   }
   
