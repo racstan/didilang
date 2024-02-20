@@ -159,77 +159,102 @@ function interpret(ast: any[]): void {
 }
 
 function interpretExpression(expression: any[], variables: {[key: string]: string | number}): any {
-  let operands: (string | number | boolean)[] = [];
-  let operators: string[] = [];
-  let result: string | number | boolean;
+  let stack: (string | number)[] = [];
+  let output: (string | number)[] = [];
+  let precedence: {[key: string]: number} = {
+    '+': 1,
+    '-': 1,
+    '*': 2,
+    '/': 2,
+    '%': 2,
+    '**': 3,
+    '>': 0,
+    '<': 0,
+    '==': 0,
+    '!=': 0,
+    '>=': 0,
+    '<=': 0,
+    '&&': -1,
+    '||': -1
+  };
+
   for (const token of expression) {
     if (token.type === 'number') {
-      operands.push(Number(token.value));
+      output.push(Number(token.value));
     } else if (token.type === 'identifier') {
       if (variables[token.value] === undefined) {
         throw new Error(`Variable ${token.value} is not defined`);
       }
-      operands.push(variables[token.value]);
+      output.push(variables[token.value]);
     } else if (token.type === 'string') {
-      operands.push(token.value.slice(1, -1));
+      output.push(token.value.slice(1, -1));
     } else if (token.type === 'operator') {
-      operators.push(token.value);
+      while (stack.length > 0 && precedence[stack[stack.length - 1]] >= precedence[token.value]) {
+        output.push(stack.pop() as string);
+      }
+      stack.push(token.value);
     }
   }
 
-  let i = 0;
-  while (i < operators.length) {
-    let operand1 = operands[i];
-    let operand2 = operands[i + 1];
-    switch (operators[i]) {
-      case '+':
-        result = Number(operand1) + Number(operand2);
-        break;
-      case '-':
-        result = Number(operand1) - Number(operand2);
-        break;
-      case '*':
-        result = Number(operand1) * Number(operand2);
-        break;
-      case '/':
-        result = Number(operand1) / Number(operand2);
-        break;
-      case '%':
-        result = Number(operand1) % Number(operand2);
-        break;
-      case '**':
-        result = Math.pow(Number(operand1), Number(operand2));
-        break;
-      case '>':
-        result = Number(operand1) > Number(operand2);
-        break;
-      case '<':
-        result = Number(operand1) < Number(operand2);
-        break;
-      case '==':
-        result = operand1 == operand2;
-        break;
-      case '!=':
-        result = operand1 != operand2;
-        break;
-      case '>=':
-        result = Number(operand1) >= Number(operand2);
-        break;
-      case '<=':
-        result = Number(operand1) <= Number(operand2);
-        break;
-      case '&&':
-        result = Boolean(operand1) && Boolean(operand2);
-        break;
-      case '||':
-        result = Boolean(operand1) || Boolean(operand2);
-        break;
-      default:
-        throw new Error(`Operator ${operators[i]} is not supported`);
-    }
-    operands.splice(i, 2, result);
-    operators.splice(i, 1);
+  while (stack.length > 0) {
+    output.push(stack.pop() as string);
   }
 
-  return operands[0];
+  let resultStack: number[] = [];
+  for (const token of output) {
+    if (typeof token === 'number') {
+      resultStack.push(token);
+    } else {
+      let operand2 = resultStack.pop() as number;
+      let operand1 = resultStack.pop() as number;
+      switch (token) {
+        case '+':
+          resultStack.push(operand1 + operand2);
+          break;
+        case '-':
+          resultStack.push(operand1 - operand2);
+          break;
+        case '*':
+          resultStack.push(operand1 * operand2);
+          break;
+        case '/':
+          resultStack.push(operand1 / operand2);
+          break;
+        case '%':
+          resultStack.push(operand1 % operand2);
+          break;
+        case '**':
+          resultStack.push(Math.pow(operand1, operand2));
+          break;
+        case '>':
+          resultStack.push(operand1 > operand2 ? 1 : 0);
+          break;
+        case '<':
+          resultStack.push(operand1 < operand2 ? 1 : 0);
+          break;
+        case '==':
+          resultStack.push(operand1 == operand2 ? 1 : 0);
+          break;
+        case '!=':
+          resultStack.push(operand1 != operand2 ? 1 : 0);
+          break;
+        case '>=':
+          resultStack.push(operand1 >= operand2 ? 1 : 0);
+          break;
+        case '<=':
+          resultStack.push(operand1 <= operand2 ? 1 : 0);
+          break;
+        case '&&':
+          resultStack.push((operand1 !== 0 && operand2 !== 0) ? 1 : 0);
+          break;
+        case '||':
+          resultStack.push((operand1 !== 0 || operand2 !== 0) ? 1 : 0);
+          break;
+        default:
+          throw new Error(`Operator ${token} is not supported`);
+      }
+    }
+  }
+
+  return resultStack[0];
 }
