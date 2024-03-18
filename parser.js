@@ -10,7 +10,7 @@ function parse(tokens) {
         if (token.type === 'variable') {
             currentStatement = { type: 'assignment', variable: '', value: '', expression: [] };
             ast.push(currentStatement);
-            currentField = 'expression';
+            currentField = 'variable';
         }
         else if (token.type === 'print') {
             currentStatement = { type: 'output', expression: [] };
@@ -23,15 +23,30 @@ function parse(tokens) {
             currentField = 'condition';
         }
         else if (token.type === 'identifier') {
-            if (currentStatement.type === 'assignment' && !currentStatement.variable) {
+            if (currentField === 'variable') {
                 currentStatement.variable = token.value;
+                currentField = '';
             }
             else {
-                currentStatement[currentField].push(token);
+                currentStatement[currentField].push({ type: 'variable', value: token.value });
             }
         }
-        else if (token.type === 'number' || token.type === 'operator' || token.type === 'string') {
-            currentStatement[currentField].push(token);
+        else if (token.type === 'number') {
+            if (currentField === 'value') {
+                currentStatement['value'] = token.value;
+            }
+            else if (currentField === 'expression') {
+                currentStatement['expression'].push({ type: 'number', value: token.value });
+            }
+        }
+        else if (token.type === 'arithmetic_operator') {
+            currentStatement[currentField].push({ type: 'operator', value: token.value });
+        }
+        else if (token.type === 'string') {
+            currentStatement[currentField].push({ type: 'string', value: token.value });
+        }
+        else if (token.type === 'assignment_operator') {
+            currentField = 'value';
         }
         else if (token.type === 'leftParen' || token.type === 'leftBrace') {
             currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';

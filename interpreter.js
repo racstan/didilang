@@ -1,21 +1,36 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.interpret = void 0;
 function interpret(ast, variables) {
+    var output = [];
     for (var _i = 0, ast_1 = ast; _i < ast_1.length; _i++) {
         var statement = ast_1[_i];
-        if (statement.type === 'assignment') {
-            variables[statement.variable] = interpretExpression(statement.expression, variables);
+        try {
+            if (statement.type === 'assignment') {
+                if (statement.value !== '') {
+                    variables[statement.variable] = Number(statement.value);
+                }
+                else if (statement.expression.length > 0) {
+                    variables[statement.variable] = interpretExpression(statement.expression, variables);
+                }
+            }
+            else if (statement.type === 'output') {
+                var expressionValue = interpretExpression(statement.expression, variables);
+                if (expressionValue !== undefined) {
+                    output.push(expressionValue);
+                }
+                else {
+                    console.error('Could not evaluate expression:', statement.expression);
+                }
+            }
         }
-        else if (statement.type === 'output') {
-            var expressionValue = interpretExpression(statement.expression, variables);
-            if (expressionValue !== undefined) {
-                console.log(expressionValue);
-            }
-            else {
-                console.error('Could not evaluate expression:', statement.expression);
-            }
+        catch (error) {
+            console.error('Error interpreting statement:', statement, error);
         }
     }
-    return;
+    return { variables: variables, output: output };
 }
+exports.interpret = interpret;
 function interpretExpression(expression, variables) {
     var stack = [];
     var precedence = {
@@ -46,10 +61,10 @@ function interpretExpression(expression, variables) {
             stack.push(variables[token.value]);
         }
         else if (token.type === 'string') {
-            stack.push(token.value.slice(1, -1));
+            stack.push(token.value);
         }
         else if (token.type === 'operator') {
-            while (stack.length > 1 && precedence[stack[stack.length - 2]] >= precedence[token.value]) {
+            while (stack.length > 1 && precedence[typeof stack[stack.length - 2] === 'string' ? stack[stack.length - 2] : ''] >= precedence[token.value]) {
                 var operator = stack.pop();
                 var operand2 = stack.pop();
                 var operand1 = stack.pop();

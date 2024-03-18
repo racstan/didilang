@@ -29,7 +29,7 @@ function tokenize(code) {
         throw new Error('Code must start with "hi didi" and end with "bye didi".');
     }
     var tokens = [];
-    var regex = /(?<=^|\s)(hi didi|bye didi|jab tak didi|agar didi|warna didi|bol didi|didi ye hai|nalla|sahi|galat)(?=\s|$)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+|==|<=|>=|!=|\+|-|\*|\/|%|\(|\)|\{|\}|,|\/\/.*/g;
+    var regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|bol didi|didi ye hai|nalla|sahi|galat)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+|==|<=|>=|!=|\+|-|\*|\/|%|\(|\)|\{|\}|,|\/\/.*/g;
     var match;
     while ((match = regex.exec(code)) !== null) {
         var token = {
@@ -41,7 +41,6 @@ function tokenize(code) {
         }
         else if (/^".*"$/.test(token.value)) {
             token.type = 'string';
-            // Remove the quotation marks from the start and end of the string
             token.value = token.value.slice(1, -1);
         }
         else if (/[a-zA-Z_]\w*/.test(token.value)) {
@@ -62,7 +61,7 @@ function tokenize(code) {
         else if (/=/.test(token.value)) {
             token.type = 'assignment_operator';
         }
-        else if (/\(|\)|\{|\}|,/.test(token.value)) { // removed semicolon from the regex
+        else if (/\(|\)|\{|\}|,/.test(token.value)) {
             token.type = 'delimiter';
         }
         tokens.push(token);
