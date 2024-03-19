@@ -8,13 +8,28 @@ Didilang is a toy programming language written in Typescript. It is the sister o
 
 ## Installation
 
-Install Didilang with npm
+Install Didilang  with npm
 
 ```bash
-  npm i didilang
+npm i didilang didirunner
 ```
-    
+Then, add the following to the ```scripts``` section of your ```package.json```:
 
+```bash
+"start": "node ./node_modules/didirunner/run.js"```
+
+Your package.json file should be looking similar to this:
+```bash
+{
+  "scripts": {
+    "start": "node ./node_modules/didirunner/run.js"
+  },
+  "dependencies": {
+    "didilang": "^1.0.3",
+    "didirunner": "^1.0.0"
+  }
+}
+```
 ## Documentation
 
 
@@ -45,6 +60,15 @@ Error message
 
 ## Usage/Examples
 Create a new file (```test.js```)
+
+```javascript
+hi didi
+bol didi "Hello World";
+bye didi
+```
+Run the code using ```npm start -- your-file-name.js```
+
+(Or run the code using the code given below)
 ```javascript
 const didilang = require('didilang');
 
@@ -65,6 +89,8 @@ console.log(tokens);
 console.log(ast);
 console.log(interpreterresult);
 ```
+
+Run the code using ```node your-file-name.js```
 
 
 ## Roadmap
