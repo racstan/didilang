@@ -1,8 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.interpret = void 0;
-function interpret(ast, variables) {
+function interpret(ast) {
     var output = [];
+    var variables = {};
     for (var _i = 0, ast_1 = ast; _i < ast_1.length; _i++) {
         var statement = ast_1[_i];
         try {
@@ -28,7 +29,7 @@ function interpret(ast, variables) {
             console.error('Error interpreting statement:', statement, error);
         }
     }
-    return { variables: variables, output: output };
+    return output;
 }
 exports.interpret = interpret;
 function interpretExpression(expression, variables) {
@@ -64,7 +65,7 @@ function interpretExpression(expression, variables) {
             stack.push(token.value);
         }
         else if (token.type === 'operator') {
-            while (stack.length > 1 && precedence[typeof stack[stack.length - 2] === 'string' ? stack[stack.length - 2] : ''] >= precedence[token.value]) {
+            while (stack.length > 2 && precedence[typeof stack[stack.length - 2] === 'string' ? stack[stack.length - 2] : ''] >= precedence[token.value]) {
                 var operator = stack.pop();
                 var operand2 = stack.pop();
                 var operand1 = stack.pop();
@@ -73,7 +74,7 @@ function interpretExpression(expression, variables) {
             stack.push(token.value);
         }
     }
-    while (stack.length > 1) {
+    while (stack.length > 2) {
         var operator = stack.pop();
         var operand2 = stack.pop();
         var operand1 = stack.pop();

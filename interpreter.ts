@@ -54,7 +54,7 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
     } else if (token.type === 'string') {
       stack.push(token.value);
     } else if (token.type === 'operator') {
-      while (stack.length > 1 && precedence[typeof stack[stack.length - 2] === 'string' ? stack[stack.length - 2] : ''] >= precedence[token.value]) {
+      while (stack.length > 2 && precedence[typeof stack[stack.length - 2] === 'string' ? stack[stack.length - 2] : ''] >= precedence[token.value]) {
         let operator = stack.pop() as string;
         let operand2 = stack.pop();
         let operand1 = stack.pop();
@@ -64,7 +64,7 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
     }
   }
 
-  while (stack.length > 1) {
+  while (stack.length > 2) {
     let operator = stack.pop() as string;
     let operand2 = stack.pop();
     let operand1 = stack.pop();

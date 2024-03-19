@@ -4,7 +4,8 @@
   "description": "Didilang is a simple and lightweight language interpreter.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node starter.js"
   },
   "private": false,
   "author": "Rachit Asthana",
