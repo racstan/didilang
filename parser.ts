@@ -19,6 +19,13 @@ export function parse(tokens: Token[]): Statement[] {
 
   for (const token of tokens) {
     switch (token.type) {
+      case 'start':
+        currentStatement = { type: 'block', statements: [] };
+        ast.push(currentStatement);
+        break;
+      case 'end':
+        currentStatement = undefined;
+        break;
       case 'variable':
         currentStatement = { type: 'assignment', variable: '', value: '', expression: [] };
         ast.push(currentStatement);

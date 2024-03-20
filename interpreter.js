@@ -9,13 +9,18 @@ function interpret(ast) {
         try {
             switch (statement.type) {
                 case 'assignment':
+                    if (!statement.variable || !statement.value)
+                        throw new Error('Invalid assignment statement');
                     variables[statement.variable] = interpretExpression(statement.value, variables);
                     break;
                 case 'output':
-                    var expressionValue = interpretExpression(statement.expression, variables);
-                    // ...
+                    if (!statement.expression)
+                        throw new Error('Invalid output statement');
+                    output.push(interpretExpression(statement.expression, variables));
                     break;
                 case 'conditional':
+                    if (!statement.condition || !statement.trueBranch)
+                        throw new Error('Invalid conditional statement');
                     if (interpretExpression(statement.condition, variables) !== 0) {
                         output.push.apply(output, interpret(statement.trueBranch));
                     }
@@ -68,11 +73,8 @@ function interpretExpression(expression, variables) {
                 stack.push(token.value);
                 break;
             case 'operator':
-                while (stack.length > 2 && precedence[typeof stack[stack.length - 2] === 'string' ? stack[stack.length - 2] : ''] >= precedence[token.value]) {
-                    var operator = stack.pop();
-                    var operand2 = stack.pop();
-                    var operand1 = stack.pop();
-                    stack.push(applyOperator(operator, operand1, operand2));
+                while (stack.length > 1 && precedence[stack[stack.length - 2]] >= precedence[token.value]) {
+                    applyOperatorToStack(stack);
                 }
                 stack.push(token.value);
                 break;
@@ -80,13 +82,16 @@ function interpretExpression(expression, variables) {
                 throw new Error("Unknown token type: ".concat(token.type));
         }
     }
-    while (stack.length > 2) {
-        var operator = stack.pop();
-        var operand2 = stack.pop();
-        var operand1 = stack.pop();
-        stack.push(applyOperator(operator, operand1, operand2));
+    while (stack.length > 1) {
+        applyOperatorToStack(stack);
     }
     return stack[0];
+}
+function applyOperatorToStack(stack) {
+    var operator = stack.pop();
+    var operand2 = stack.pop();
+    var operand1 = stack.pop();
+    stack.push(applyOperator(operator, operand1, operand2));
 }
 function applyOperator(operator, operand1, operand2) {
     switch (operator) {

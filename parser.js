@@ -11,6 +11,13 @@ function parse(tokens) {
     for (var _i = 0, tokens_1 = tokens; _i < tokens_1.length; _i++) {
         var token = tokens_1[_i];
         switch (token.type) {
+            case 'start':
+                currentStatement = { type: 'block', statements: [] };
+                ast.push(currentStatement);
+                break;
+            case 'end':
+                currentStatement = undefined;
+                break;
             case 'variable':
                 currentStatement = { type: 'assignment', variable: '', value: '', expression: [] };
                 ast.push(currentStatement);
