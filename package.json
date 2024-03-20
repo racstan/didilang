@@ -20,5 +20,5 @@
   "devDependencies": {
     "@types/node": "^20.11.0"
   },
-  "keywords": ["didi", ".didi", "language", "interpreter", "programming"]
+  "keywords": ["didi", ".didi", "language", "interpreter", "programming","lexer","parser"]
 }
