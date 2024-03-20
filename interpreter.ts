@@ -1,30 +1,51 @@
-export function interpret(ast: any[]): any[] {
+type Token = {
+  type: string;
+  value: string | number;
+};
+
+type Expression = Token[];
+type Statement = {
+  type: string;
+  variable?: string;
+  value?: Expression;
+  expression?: Expression;
+  condition?: Expression;
+  trueBranch?: Statement[];
+  falseBranch?: Statement[];
+};
+export function interpret(ast: Statement[]): any[] {
   let output: any[] = [];
   let variables: {[key: string]: string | number} = {};
+
   for (const statement of ast) {
     try {
-      if (statement.type === 'assignment') {
-        if (statement.value !== '') {
-          variables[statement.variable] = Number(statement.value);
-        } else if (statement.expression.length > 0) {
-          variables[statement.variable] = interpretExpression(statement.expression, variables);
-        }
-      } else if (statement.type === 'output') {
-        const expressionValue = interpretExpression(statement.expression, variables);
-        if (expressionValue !== undefined) {
-          output.push(expressionValue);
-        } else {
-          console.error('Could not evaluate expression:', statement.expression);
-        }
+      switch (statement.type) {
+        case 'assignment':
+          variables[statement.variable!] = interpretExpression(statement.value!, variables);
+          break;
+        case 'output':
+          const expressionValue = interpretExpression(statement.expression!, variables);
+          // ...
+          break;
+        case 'conditional':
+          if (interpretExpression(statement.condition!, variables) !== 0) {
+            output.push(...interpret(statement.trueBranch!));
+          } else if (statement.falseBranch) {
+            output.push(...interpret(statement.falseBranch));
+          }
+          break;
+        default:
+          throw new Error(`Unknown statement type: ${statement.type}`);
       }
     } catch (error) {
       console.error('Error interpreting statement:', statement, error);
     }
   }
+
   return output;
 }
 
-function interpretExpression(expression: any[], variables: {[key: string]: string | number}): any {
+function interpretExpression(expression: Expression, variables: {[key: string]: string | number}): any {
   let stack: (string | number)[] = [];
   let precedence: {[key: string]: number} = {
     '+': 1,
@@ -44,23 +65,30 @@ function interpretExpression(expression: any[], variables: {[key: string]: strin
   };
 
   for (const token of expression) {
-    if (token.type === 'number') {
-      stack.push(Number(token.value));
-    } else if (token.type === 'identifier') {
-      if (variables[token.value] === undefined) {
-        throw new Error(`Variable ${token.value} is not defined`);
-      }
-      stack.push(variables[token.value]);
-    } else if (token.type === 'string') {
-      stack.push(token.value);
-    } else if (token.type === 'operator') {
-      while (stack.length > 2 && precedence[typeof stack[stack.length - 2] === 'string' ? stack[stack.length - 2] : ''] >= precedence[token.value]) {
-        let operator = stack.pop() as string;
-        let operand2 = stack.pop();
-        let operand1 = stack.pop();
-        stack.push(applyOperator(operator, operand1, operand2));
-      }
-      stack.push(token.value);
+    switch (token.type) {
+      case 'number':
+        stack.push(Number(token.value));
+        break;
+      case 'variable':
+        if (variables[token.value] === undefined) {
+          throw new Error(`Variable ${token.value} is not defined`);
+        }
+        stack.push(variables[token.value]);
+        break;
+      case 'string':
+        stack.push(token.value);
+        break;
+      case 'operator':
+        while (stack.length > 2 && precedence[typeof stack[stack.length - 2] === 'string' ? stack[stack.length - 2] : ''] >= precedence[token.value]) {
+          let operator = stack.pop() as string;
+          let operand2 = stack.pop();
+          let operand1 = stack.pop();
+          stack.push(applyOperator(operator, operand1, operand2));
+        }
+        stack.push(token.value);
+        break;
+      default:
+        throw new Error(`Unknown token type: ${token.type}`);
     }
   }
 

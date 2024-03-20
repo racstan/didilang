@@ -7,22 +7,24 @@ function interpret(ast) {
     for (var _i = 0, ast_1 = ast; _i < ast_1.length; _i++) {
         var statement = ast_1[_i];
         try {
-            if (statement.type === 'assignment') {
-                if (statement.value !== '') {
-                    variables[statement.variable] = Number(statement.value);
-                }
-                else if (statement.expression.length > 0) {
-                    variables[statement.variable] = interpretExpression(statement.expression, variables);
-                }
-            }
-            else if (statement.type === 'output') {
-                var expressionValue = interpretExpression(statement.expression, variables);
-                if (expressionValue !== undefined) {
-                    output.push(expressionValue);
-                }
-                else {
-                    console.error('Could not evaluate expression:', statement.expression);
-                }
+            switch (statement.type) {
+                case 'assignment':
+                    variables[statement.variable] = interpretExpression(statement.value, variables);
+                    break;
+                case 'output':
+                    var expressionValue = interpretExpression(statement.expression, variables);
+                    // ...
+                    break;
+                case 'conditional':
+                    if (interpretExpression(statement.condition, variables) !== 0) {
+                        output.push.apply(output, interpret(statement.trueBranch));
+                    }
+                    else if (statement.falseBranch) {
+                        output.push.apply(output, interpret(statement.falseBranch));
+                    }
+                    break;
+                default:
+                    throw new Error("Unknown statement type: ".concat(statement.type));
             }
         }
         catch (error) {
@@ -52,26 +54,30 @@ function interpretExpression(expression, variables) {
     };
     for (var _i = 0, expression_1 = expression; _i < expression_1.length; _i++) {
         var token = expression_1[_i];
-        if (token.type === 'number') {
-            stack.push(Number(token.value));
-        }
-        else if (token.type === 'identifier') {
-            if (variables[token.value] === undefined) {
-                throw new Error("Variable ".concat(token.value, " is not defined"));
-            }
-            stack.push(variables[token.value]);
-        }
-        else if (token.type === 'string') {
-            stack.push(token.value);
-        }
-        else if (token.type === 'operator') {
-            while (stack.length > 2 && precedence[typeof stack[stack.length - 2] === 'string' ? stack[stack.length - 2] : ''] >= precedence[token.value]) {
-                var operator = stack.pop();
-                var operand2 = stack.pop();
-                var operand1 = stack.pop();
-                stack.push(applyOperator(operator, operand1, operand2));
-            }
-            stack.push(token.value);
+        switch (token.type) {
+            case 'number':
+                stack.push(Number(token.value));
+                break;
+            case 'variable':
+                if (variables[token.value] === undefined) {
+                    throw new Error("Variable ".concat(token.value, " is not defined"));
+                }
+                stack.push(variables[token.value]);
+                break;
+            case 'string':
+                stack.push(token.value);
+                break;
+            case 'operator':
+                while (stack.length > 2 && precedence[typeof stack[stack.length - 2] === 'string' ? stack[stack.length - 2] : ''] >= precedence[token.value]) {
+                    var operator = stack.pop();
+                    var operand2 = stack.pop();
+                    var operand1 = stack.pop();
+                    stack.push(applyOperator(operator, operand1, operand2));
+                }
+                stack.push(token.value);
+                break;
+            default:
+                throw new Error("Unknown token type: ".concat(token.type));
         }
     }
     while (stack.length > 2) {
