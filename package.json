@@ -1,6 +1,6 @@
 {
   "name": "didilang",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Didilang is a simple and lightweight language interpreter.",
   "main": "index.js",
   "scripts": {
