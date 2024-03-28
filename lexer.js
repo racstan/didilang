@@ -17,6 +17,8 @@ var didiDict = {
     "nalla": "null",
     "sahi": "true",
     "galat": "false",
+    "array": "array",
+    "object": "object",
     // Error message
     "Kya kar rhi hai tu": "Invalid syntax"
 };
@@ -29,7 +31,7 @@ function tokenize(code) {
         throw new Error('Code must start with "hi didi" and end with "bye didi".');
     }
     var tokens = [];
-    var regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|bol didi|didi ye hai|nalla|sahi|galat)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+|==|<=|>=|!=|\+|-|\*|\/|%|\(|\)|\{|\}|,|\/\/.*/g;
+    var regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|bol didi|didi ye hai|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+|==|<=|>=|!=|\+|-|\*|\/|%|\(|\)|\{|\}|,|\/\/.*/g;
     var match;
     while ((match = regex.exec(code)) !== null) {
         var token = {
