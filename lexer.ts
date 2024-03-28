@@ -37,7 +37,7 @@ export function tokenize(code: string): Token[] {
     throw new Error('Code must start with "hi didi" and end with "bye didi".');
   }
   const tokens: Token[] = [];
-  const regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|bol didi|didi ye hai|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+|==|<=|>=|!=|\+|-|\*|\/|%|\(|\)|\{|\}|,|\/\/.*/g;
+  const regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|bol didi|didi ye hai|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+|==|<=|>=|!=|\+|-|\*|\/|%|\(|\)|\{|\}|,|\/\/.*|\/\*[\s\S]*?\*\//g;
   let match;
   while ((match = regex.exec(code)) !== null) {
     const token: Token = {
@@ -56,6 +56,8 @@ export function tokenize(code: string): Token[] {
       token.type = 'number';
     } else if (/\/\/.*/.test(token.value)) {
       token.type = 'comment';
+    } else if (/\/\*[\s\S]*?\*\//.test(token.value)) {
+      token.type = 'multiline_comment';
     } else if (/==|<=|>=|!=/.test(token.value)) {
       token.type = 'comparison_operator';
     } else if (/\+|-|\*|\/|%/.test(token.value)) {
