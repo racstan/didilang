@@ -31,7 +31,7 @@ function tokenize(code) {
         throw new Error('Code must start with "hi didi" and end with "bye didi".');
     }
     var tokens = [];
-    var regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|bol didi|didi ye hai|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+|==|<=|>=|!=|\+|-|\*|\/|%|\(|\)|\{|\}|,|\/\/.*|\/\*[\s\S]*?\*\//g;
+    var regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|bol didi|didi ye hai|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+(\.\d+)?|==|<=|>=|!=|\+|-|\*|\/|%|\(|\)|\{|\}|,|\/\/.*|\/\*[\s\S]*?\*\//g;
     var match;
     while ((match = regex.exec(code)) !== null) {
         var token = {
@@ -48,7 +48,7 @@ function tokenize(code) {
         else if (/[a-zA-Z_]\w*/.test(token.value)) {
             token.type = 'identifier';
         }
-        else if (/\d+/.test(token.value)) {
+        else if (/\d+(\.\d+)?/.test(token.value)) {
             token.type = 'number';
         }
         else if (/\/\/.*/.test(token.value)) {

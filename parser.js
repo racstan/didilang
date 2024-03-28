@@ -44,10 +44,10 @@ function parse(tokens) {
                 break;
             case 'number':
                 if (currentStatement && currentField === 'value') {
-                    currentStatement['value'] = token.value;
+                    currentStatement['value'] = parseFloat(token.value);
                 }
                 else if (currentStatement && currentField === 'expression') {
-                    currentStatement['expression'].push({ type: 'number', value: token.value });
+                    currentStatement['expression'].push({ type: 'number', value: parseFloat(token.value) });
                 }
                 break;
             case 'arithmetic_operator':
