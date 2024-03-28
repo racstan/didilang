@@ -36,7 +36,7 @@ function tokenize(code) {
     while ((match = regex.exec(code)) !== null) {
         var token = {
             type: 'unknown',
-            value: match[0].trim(),
+            value: match[0],
         };
         if (didiDict[token.value]) {
             token.type = didiDict[token.value];
@@ -68,6 +68,12 @@ function tokenize(code) {
         }
         else if (/\(|\)|\{|\}|,/.test(token.value)) {
             token.type = 'delimiter';
+        }
+        else if (/[\r\n]+/.test(token.value)) {
+            token.type = 'newline';
+        }
+        else if (/\s+/.test(token.value)) {
+            token.type = 'whitespace';
         }
         if (token.type === 'unknown') {
             throw new Error("Unknown token: ".concat(token.value));

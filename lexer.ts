@@ -42,7 +42,7 @@ export function tokenize(code: string): Token[] {
   while ((match = regex.exec(code)) !== null) {
     const token: Token = {
       type: 'unknown',
-      value: match[0].trim(),
+      value: match[0],
     };
   
     if (didiDict[token.value]) {
@@ -66,6 +66,10 @@ export function tokenize(code: string): Token[] {
       token.type = 'assignment_operator';
     } else if (/\(|\)|\{|\}|,/.test(token.value)) { 
       token.type = 'delimiter';
+    } else if (/[\r\n]+/.test(token.value)) {
+      token.type = 'newline';
+    } else if (/\s+/.test(token.value)) {
+      token.type = 'whitespace';
     }
     
     if (token.type === 'unknown') {
