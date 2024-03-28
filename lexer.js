@@ -64,6 +64,9 @@ function tokenize(code) {
         else if (/\(|\)|\{|\}|,/.test(token.value)) {
             token.type = 'delimiter';
         }
+        if (token.type === 'unknown') {
+            throw new Error("Unknown token: ".concat(token.value));
+        }
         tokens.push(token);
     }
     return tokens;
