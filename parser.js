@@ -61,10 +61,13 @@ function parse(tokens) {
                 if (currentStatement && currentField) {
                     if (currentField === 'variable') {
                         currentStatement.variable = token.value;
-                        currentField = 'value';
+                        currentField = '';
+                    }
+                    else if (Array.isArray(currentStatement[currentField])) {
+                        currentStatement[currentField].push({ type: token.type, value: token.value });
                     }
                     else {
-                        currentStatement[currentField].push({ type: token.type, value: token.value });
+                        throw new Error("Cannot push to non-array field: ".concat(currentField));
                     }
                 }
                 break;
@@ -79,6 +82,7 @@ function parse(tokens) {
                 if (currentField !== 'condition') {
                     throw new Error('Unexpected left parenthesis or brace');
                 }
+                "";
                 currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
                 break;
             case 'rightParen':

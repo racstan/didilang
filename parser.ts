@@ -58,16 +58,18 @@ export function parse(tokens: Token[]): Statement[] {
         }
         currentField = 'condition';
         break;
-      case 'identifier':
+        case 'identifier':
       case 'number':
       case 'arithmetic_operator':
       case 'string':
         if (currentStatement && currentField) {
           if (currentField === 'variable') {
             currentStatement.variable = token.value;
-            currentField = 'value';
-          } else {
+            currentField = '';
+          } else if (Array.isArray(currentStatement[currentField])) {
             currentStatement[currentField].push({ type: token.type, value: token.value });
+          } else {
+            throw new Error(`Cannot push to non-array field: ${currentField}`);
           }
         }
         break;
@@ -81,7 +83,7 @@ export function parse(tokens: Token[]): Statement[] {
       case 'leftBrace':
         if (currentField !== 'condition') {
           throw new Error('Unexpected left parenthesis or brace');
-        }
+        }``
         currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
         break;
       case 'rightParen':

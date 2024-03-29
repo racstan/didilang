@@ -46,7 +46,12 @@ function tokenize(code) {
             token.value = token.value.slice(1, -1);
         }
         else if (/[a-zA-Z_]\w*/.test(token.value)) {
-            token.type = 'identifier';
+            if (variables[token.value]) {
+                token.type = 'variable';
+            }
+            else {
+                token.type = 'identifier';
+            }
         }
         else if (/\d+(\.\d+)?/.test(token.value)) {
             token.type = 'number';
