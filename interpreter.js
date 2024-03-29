@@ -28,6 +28,11 @@ function interpret(ast) {
                         output.push.apply(output, interpret(statement.falseBranch));
                     }
                     break;
+                case 'block':
+                    if (!statement.trueBranch)
+                        throw new Error('Invalid block statement');
+                    output.push.apply(output, interpret(statement.trueBranch));
+                    break;
                 default:
                     throw new Error("Unknown statement type: ".concat(statement.type));
             }

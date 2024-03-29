@@ -37,6 +37,10 @@ export function interpret(ast: Statement[]): any[] {
             output.push(...interpret(statement.falseBranch));
           }
           break;
+        case 'block':
+          if (!statement.trueBranch) throw new Error('Invalid block statement');
+          output.push(...interpret(statement.trueBranch));
+          break;
         default:
           throw new Error(`Unknown statement type: ${statement.type}`);
       }
