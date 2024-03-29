@@ -9,9 +9,9 @@ function interpret(ast) {
         try {
             switch (statement.type) {
                 case 'assignment':
-                    if (!statement.variable || !statement.value)
+                    if (!statement.variable || !statement.expression)
                         throw new Error('Invalid assignment statement');
-                    variables[statement.variable] = interpretExpression(statement.value, variables);
+                    variables[statement.variable] = interpretExpression(statement.expression, variables);
                     break;
                 case 'output':
                     if (!statement.expression)

@@ -22,8 +22,8 @@ export function interpret(ast: Statement[]): any[] {
     try {
       switch (statement.type) {
         case 'assignment':
-          if (!statement.variable || !statement.value) throw new Error('Invalid assignment statement');
-          variables[statement.variable] = interpretExpression(statement.value, variables);
+          if (!statement.variable || !statement.expression) throw new Error('Invalid assignment statement');
+          variables[statement.variable] = interpretExpression(statement.expression, variables);
           break;
         case 'output':
           if (!statement.expression) throw new Error('Invalid output statement');
