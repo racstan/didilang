@@ -6,31 +6,52 @@ function parse(tokens) {
         throw new Error('No tokens to parse');
     }
     var ast = [];
+    var currentBlock;
     var currentStatement;
     var currentField = '';
     for (var _i = 0, tokens_1 = tokens; _i < tokens_1.length; _i++) {
         var token = tokens_1[_i];
         switch (token.type) {
             case 'start':
-                currentStatement = { type: 'block', statements: [] };
-                ast.push(currentStatement);
+                currentBlock = [];
                 break;
             case 'end':
-                currentStatement = undefined;
+                if (currentBlock) {
+                    ast.push({ type: 'block', statements: currentBlock });
+                    currentBlock = undefined;
+                }
+                else {
+                    throw new Error('Unexpected end token');
+                }
                 break;
             case 'variable':
                 currentStatement = { type: 'assignment', variable: '', value: '', expression: [] };
-                ast.push(currentStatement);
+                if (currentBlock) {
+                    currentBlock.push(currentStatement);
+                }
+                else {
+                    ast.push(currentStatement);
+                }
                 currentField = 'variable';
                 break;
             case 'print':
                 currentStatement = { type: 'output', expression: [] };
-                ast.push(currentStatement);
+                if (currentBlock) {
+                    currentBlock.push(currentStatement);
+                }
+                else {
+                    ast.push(currentStatement);
+                }
                 currentField = 'expression';
                 break;
             case 'conditional':
                 currentStatement = { type: 'conditional', condition: [], trueBranch: [], falseBranch: [] };
-                ast.push(currentStatement);
+                if (currentBlock) {
+                    currentBlock.push(currentStatement);
+                }
+                else {
+                    ast.push(currentStatement);
+                }
                 currentField = 'condition';
                 break;
             case 'identifier':
@@ -70,6 +91,9 @@ function parse(tokens) {
             default:
                 throw new Error("Unknown token type: ".concat(token.type));
         }
+    }
+    if (currentBlock) {
+        throw new Error('Unclosed block');
     }
     return ast;
 }

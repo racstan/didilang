@@ -31,7 +31,34 @@ function interpret(ast) {
                 case 'block':
                     if (!statement.trueBranch)
                         throw new Error('Invalid block statement');
-                    output.push.apply(output, interpret(statement.trueBranch));
+                    for (var _a = 0, _b = statement.trueBranch; _a < _b.length; _a++) {
+                        var innerStatement = _b[_a];
+                        switch (innerStatement.type) {
+                            case 'assignment':
+                                if (!innerStatement.variable || !innerStatement.expression)
+                                    throw new Error('Invalid assignment statement');
+                                variables[innerStatement.variable] = interpretExpression(innerStatement.expression, variables);
+                                break;
+                            case 'output':
+                                if (!innerStatement.expression)
+                                    throw new Error('Invalid output statement');
+                                output.push(interpretExpression(innerStatement.expression, variables));
+                                break;
+                            // handle other statement types
+                            case 'conditional':
+                                if (!innerStatement.condition || !innerStatement.trueBranch)
+                                    throw new Error('Invalid conditional statement');
+                                if (interpretExpression(innerStatement.condition, variables) !== 0) {
+                                    output.push.apply(output, interpret(innerStatement.trueBranch));
+                                }
+                                else if (innerStatement.falseBranch) {
+                                    output.push.apply(output, interpret(innerStatement.falseBranch));
+                                }
+                                break;
+                            default:
+                                throw new Error("Unknown inner statement type: ".concat(innerStatement.type));
+                        }
+                    }
                     break;
                 default:
                     throw new Error("Unknown statement type: ".concat(statement.type));

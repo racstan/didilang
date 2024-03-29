@@ -14,31 +14,48 @@ export function parse(tokens: Token[]): Statement[] {
   }
 
   const ast: Statement[] = [];
+  let currentBlock: Statement[] | undefined;
   let currentStatement: Statement | undefined;
   let currentField: string = '';
 
   for (const token of tokens) {
     switch (token.type) {
       case 'start':
-        currentStatement = { type: 'block', statements: [] };
-        ast.push(currentStatement);
+        currentBlock = [];
         break;
       case 'end':
-        currentStatement = undefined;
+        if (currentBlock) {
+          ast.push({ type: 'block', statements: currentBlock });
+          currentBlock = undefined;
+        } else {
+          throw new Error('Unexpected end token');
+        }
         break;
       case 'variable':
         currentStatement = { type: 'assignment', variable: '', value: '', expression: [] };
-        ast.push(currentStatement);
+        if (currentBlock) {
+          currentBlock.push(currentStatement);
+        } else {
+          ast.push(currentStatement);
+        }
         currentField = 'variable';
         break;
       case 'print':
         currentStatement = { type: 'output', expression: [] };
-        ast.push(currentStatement);
+        if (currentBlock) {
+          currentBlock.push(currentStatement);
+        } else {
+          ast.push(currentStatement);
+        }
         currentField = 'expression';
         break;
       case 'conditional':
         currentStatement = { type: 'conditional', condition: [], trueBranch: [], falseBranch: [] };
-        ast.push(currentStatement);
+        if (currentBlock) {
+          currentBlock.push(currentStatement);
+        } else {
+          ast.push(currentStatement);
+        }
         currentField = 'condition';
         break;
       case 'identifier':
@@ -77,6 +94,10 @@ export function parse(tokens: Token[]): Statement[] {
       default:
         throw new Error(`Unknown token type: ${token.type}`);
     }
+  }
+
+  if (currentBlock) {
+    throw new Error('Unclosed block');
   }
 
   return ast;
