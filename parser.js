@@ -34,37 +34,24 @@ function parse(tokens) {
                 currentField = 'condition';
                 break;
             case 'identifier':
-                if (currentStatement && currentField === 'variable') {
-                    currentStatement.variable = token.value;
-                    currentField = '';
-                }
-                else if (currentStatement) {
-                    currentStatement[currentField].push({ type: 'variable', value: token.value });
-                }
-                break;
             case 'number':
-                if (currentStatement && currentField === 'value') {
-                    currentStatement['value'] = parseFloat(token.value);
-                }
-                else if (currentStatement && currentField === 'expression') {
-                    currentStatement['expression'].push({ type: 'number', value: parseFloat(token.value) });
-                }
-                break;
             case 'arithmetic_operator':
-                if (currentStatement) {
-                    currentStatement[currentField].push({ type: 'operator', value: token.value });
-                }
-                break;
             case 'string':
-                if (currentStatement) {
-                    currentStatement[currentField].push({ type: 'string', value: token.value });
+                if (currentStatement && currentField) {
+                    if (currentField === 'variable') {
+                        currentStatement.variable = token.value;
+                        currentField = 'value';
+                    }
+                    else {
+                        currentStatement[currentField].push({ type: token.type, value: token.value });
+                    }
                 }
                 break;
             case 'assignment_operator':
                 if (currentField !== 'variable') {
                     throw new Error('Unexpected assignment operator');
                 }
-                currentField = 'value';
+                currentField = 'expression';
                 break;
             case 'leftParen':
             case 'leftBrace':
