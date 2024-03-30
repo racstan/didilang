@@ -61,6 +61,10 @@ function parse(tokens) {
                 if (currentStatement && currentField) {
                     if (currentField === 'variable') {
                         currentStatement.variable = token.value;
+                        currentField = 'value';
+                    }
+                    else if (currentField === 'value') {
+                        currentStatement.value = token.value;
                         currentField = '';
                     }
                     else if (Array.isArray(currentStatement[currentField])) {

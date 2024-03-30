@@ -29,9 +29,9 @@ function interpret(ast) {
                     }
                     break;
                 case 'block':
-                    if (!statement.trueBranch)
+                    if (!statement.statements)
                         throw new Error('Invalid block statement');
-                    for (var _a = 0, _b = statement.trueBranch; _a < _b.length; _a++) {
+                    for (var _a = 0, _b = statement.statements; _a < _b.length; _a++) {
                         var innerStatement = _b[_a];
                         switch (innerStatement.type) {
                             case 'assignment':
