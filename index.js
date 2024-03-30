@@ -1,9 +1,11 @@
 const lexer = require('./lexer');
 const parser = require('./parser');
-const interpreter = require('./interpreter');
+const interpreterMain = require('./interpreterMain');
+const operatorUtils = require('./operatorUtils');
 
 module.exports = {
   lexer,
   parser,
-  interpreter
+  interpreterMain,
+  operatorUtils
 };

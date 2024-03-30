@@ -1,14 +1,14 @@
 function applyOperatorToStack(stack: any[]) {
-    const operator = stack[stack.length - 2];
-    const right = stack.pop();
-    const left = stack.pop();
-  
-    if (typeof operator !== 'string' || !['+', '-', '*', '/', '%', '**', '>', '<', '==', '!=', '>=', '<=', '&&', '||'].includes(operator)) {
+  const right = stack.pop();
+  const operator = stack.pop();
+  const left = stack.pop();
+
+  if (typeof operator !== 'string' || !['+', '-', '*', '/', '%', '**', '>', '<', '==', '!=', '>=', '<=', '&&', '||'].includes(operator)) {
       throw new Error(`Operator ${operator} is not supported`);
-    }
-  
-    stack.push(applyOperator(operator, left, right));
   }
+
+  stack.push(applyOperator(operator, left, right));
+}
   
   function applyOperator(operator: string, operand1: any, operand2: any): any {
     switch (operator) {
