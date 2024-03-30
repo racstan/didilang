@@ -99,6 +99,7 @@ function interpretExpression(expression: Expression, variables: {[key: string]: 
         stack.push(Number(token.value));
         break;
       case 'variable':
+      case 'identifier':
         if (variables[token.value] === undefined) {
           throw new Error(`Variable ${token.value} is not defined`);
         }
@@ -107,6 +108,7 @@ function interpretExpression(expression: Expression, variables: {[key: string]: 
       case 'string':
         stack.push(token.value);
         break;
+      case 'arithmetic_operator':
       case 'operator':
         while (stack.length > 1 && precedence[stack[stack.length - 2]] >= precedence[token.value]) {
           applyOperatorToStack(stack);
@@ -126,9 +128,9 @@ function interpretExpression(expression: Expression, variables: {[key: string]: 
 }
 
 function applyOperatorToStack(stack: any[]): void {
-  let operator = stack.pop();
   let operand2 = stack.pop();
   let operand1 = stack.pop();
+  let operator = stack.pop();
   stack.push(applyOperator(operator, operand1, operand2));
 }
 

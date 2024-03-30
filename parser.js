@@ -25,7 +25,7 @@ function parse(tokens) {
                 }
                 break;
             case 'variable':
-                currentStatement = { type: 'assignment', variable: '', value: '', expression: [] };
+                currentStatement = { type: 'assignment', variable: '', expression: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
                 }
@@ -61,11 +61,7 @@ function parse(tokens) {
                 if (currentStatement && currentField) {
                     if (currentField === 'variable') {
                         currentStatement.variable = token.value;
-                        currentField = 'value';
-                    }
-                    else if (currentField === 'value') {
-                        currentStatement.value = token.value;
-                        currentField = '';
+                        currentField = 'expression';
                     }
                     else if (Array.isArray(currentStatement[currentField])) {
                         currentStatement[currentField].push({ type: token.type, value: token.value });

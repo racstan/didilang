@@ -31,15 +31,15 @@ export function parse(tokens: Token[]): Statement[] {
           throw new Error('Unexpected end token');
         }
         break;
-      case 'variable':
-        currentStatement = { type: 'assignment', variable: '', value: '', expression: [] };
-        if (currentBlock) {
-          currentBlock.push(currentStatement);
-        } else {
-          ast.push(currentStatement);
-        }
-        currentField = 'variable';
-        break;
+        case 'variable':
+          currentStatement = { type: 'assignment', variable: '', expression: [] };
+          if (currentBlock) {
+            currentBlock.push(currentStatement);
+          } else {
+            ast.push(currentStatement);
+          }
+          currentField = 'variable';
+          break;
       case 'print':
         currentStatement = { type: 'output', expression: [] };
         if (currentBlock) {
@@ -59,23 +59,20 @@ export function parse(tokens: Token[]): Statement[] {
         currentField = 'condition';
         break;
         case 'identifier':
-      case 'number':
-      case 'arithmetic_operator':
-      case 'string':
-        if (currentStatement && currentField) {
-          if (currentField === 'variable') {
-            currentStatement.variable = token.value;
-            currentField = 'value';
-          } else if (currentField === 'value') {
-            currentStatement.value = token.value;
-            currentField = '';
-          } else if (Array.isArray(currentStatement[currentField])) {
-            currentStatement[currentField].push({ type: token.type, value: token.value });
-          } else {
-            throw new Error(`Cannot push to non-array field: ${currentField}`);
-          }
-        }
-        break;
+          case 'number':
+          case 'arithmetic_operator':
+          case 'string':
+            if (currentStatement && currentField) {
+              if (currentField === 'variable') {
+                currentStatement.variable = token.value;
+                currentField = 'expression';
+              } else if (Array.isArray(currentStatement[currentField])) {
+                currentStatement[currentField].push({ type: token.type, value: token.value });
+              } else {
+                throw new Error(`Cannot push to non-array field: ${currentField}`);
+              }
+            }
+            break;
       case 'assignment_operator':
         if (currentField !== 'variable') {
           throw new Error('Unexpected assignment operator');

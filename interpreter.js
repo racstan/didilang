@@ -44,7 +44,6 @@ function interpret(ast) {
                                     throw new Error('Invalid output statement');
                                 output.push(interpretExpression(innerStatement.expression, variables));
                                 break;
-                            // handle other statement types
                             case 'conditional':
                                 if (!innerStatement.condition || !innerStatement.trueBranch)
                                     throw new Error('Invalid conditional statement');
@@ -96,6 +95,7 @@ function interpretExpression(expression, variables) {
                 stack.push(Number(token.value));
                 break;
             case 'variable':
+            case 'identifier':
                 if (variables[token.value] === undefined) {
                     throw new Error("Variable ".concat(token.value, " is not defined"));
                 }
@@ -104,6 +104,7 @@ function interpretExpression(expression, variables) {
             case 'string':
                 stack.push(token.value);
                 break;
+            case 'arithmetic_operator':
             case 'operator':
                 while (stack.length > 1 && precedence[stack[stack.length - 2]] >= precedence[token.value]) {
                     applyOperatorToStack(stack);
@@ -120,9 +121,9 @@ function interpretExpression(expression, variables) {
     return stack[0];
 }
 function applyOperatorToStack(stack) {
-    var operator = stack.pop();
     var operand2 = stack.pop();
     var operand1 = stack.pop();
+    var operator = stack.pop();
     stack.push(applyOperator(operator, operand1, operand2));
 }
 function applyOperator(operator, operand1, operand2) {
