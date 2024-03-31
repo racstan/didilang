@@ -1,7 +1,13 @@
 # Changelog
 
 All notable changes to the "didilang" will be documented in this file.
-## [1.0.3] - 2024-03-20
+## [1.0.5] - 2024-03-30
+- Major Updates in Interpreter.
+- Updated lexer,parser.
+- Updated Readme.
+- Updated package.json.
+
+## [1.0.4] - 2024-03-20
 
 - Updated Readme.
 - Updated package.json.

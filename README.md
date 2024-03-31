@@ -4,11 +4,9 @@
 Didilang is a toy programming language written in Typescript. It is the sister of Bhailang.
 
 
-
-
 ## Installation
 
-Install Didilang  with npm
+Go to your project directory and install Didilang.
 
 ```bash
 npm i didilang didirunner
@@ -16,7 +14,8 @@ npm i didilang didirunner
 Then, add the following to the ```scripts``` section of your ```package.json```:
 
 ```bash
-"start": "node ./node_modules/didirunner/run.js"```
+"start": "node ./node_modules/didirunner/run.js"
+```
 
 Your package.json file should be looking similar to this:
 ```bash
@@ -25,10 +24,15 @@ Your package.json file should be looking similar to this:
     "start": "node ./node_modules/didirunner/run.js"
   },
   "dependencies": {
-    "didilang": "^1.0.3",
-    "didirunner": "^1.0.0"
+    "didilang": "^1.0.5",
+    "didirunner": "^1.0.1"
   }
 }
+```
+
+Didilang is subject to constant improvements hence use the following command in your project directory to stay updated.
+```bash
+npm update
 ```
 ## Documentation
 
@@ -60,37 +64,29 @@ Error message
 
 ## Usage/Examples
 Create a new file (```test.js```)
+Run the code using ```npm start -- your-file-name.js```
 
+Example 1:
 ```javascript
 hi didi
 bol didi "Hello World";
 bye didi
 ```
-Run the code using ```npm start -- your-file-name.js```
+Outputs:  ```[ 'Hello World!' ]```
 
-(Or run the code using the code given below)
+Example 2:
 ```javascript
-const didilang = require('didilang');
-
-//Provide code as a string
-
-const code = 'hi didi bol didi "hi" bye didi';
-
-//Use the following methods to tokenize, parse and interpret the result
-
-const tokens = didilang.lexer.tokenize(code);
-const ast = didilang.parser.parse(tokens);
-const interpreterresult = didilang.interpreter.interpret(ast, {});
-
-//View the results
- 
-console.log(code);
-console.log(tokens);
-console.log(ast);
-console.log(interpreterresult);
+hi didi
+didi ye hai a=5;
+didi ye hai b=10;
+bol didi a+b;
+bol didi a-b;
+bol didi a*b;
+bol didi a/b;
+bye didi
 ```
+Outputs:  ```[ 15, -5, 50, 0.5 ]```
 
-Run the code using ```node your-file-name.js```
 
 
 ## Roadmap
