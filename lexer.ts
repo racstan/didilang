@@ -50,6 +50,12 @@ export function tokenize(code: string): Token[] {
     } else if (/^".*"$/.test(token.value)) {
       token.type = 'string';
       token.value = token.value.slice(1, -1);
+    } else if (/^\/\/.*/.test(token.value)) {
+      token.type = 'comment';
+      token.value = token.value.slice(2).trim();
+    } else if (/^\/\*[\s\S]*?\*\/$/.test(token.value)) {
+      token.type = 'multiline_comment';
+      token.value = token.value.slice(2, -2).trim();
     } else if (/[a-zA-Z_]\w*/.test(token.value)) {
       if (variables[token.value]) {
         token.type = 'variable';
@@ -58,10 +64,6 @@ export function tokenize(code: string): Token[] {
       }
     } else if (/\d+(\.\d+)?/.test(token.value)) {
       token.type = 'number';
-    } else if (/\/\/.*/.test(token.value)) {
-      token.type = 'comment';
-    } else if (/\/\*[\s\S]*?\*\//.test(token.value)) {
-      token.type = 'multiline_comment';
     } else if (/==|<=|>=|!=/.test(token.value)) {
       token.type = 'comparison_operator';
     } else if (/\+|-|\*|\/|%/.test(token.value)) {
