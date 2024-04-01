@@ -9,6 +9,10 @@ function interpret(ast) {
         var statement = ast_1[_i];
         try {
             switch (statement.type) {
+                case 'comment':
+                case 'multiline_comment':
+                    // Ignore comments
+                    break;
                 case 'assignment':
                     if (!statement.variable || !statement.expression)
                         throw new Error('Invalid assignment statement');
@@ -92,6 +96,10 @@ function interpretExpression(expression, variables) {
     for (var _i = 0, expression_1 = expression; _i < expression_1.length; _i++) {
         var token = expression_1[_i];
         switch (token.type) {
+            case 'comment':
+            case 'multiline_comment':
+                // Ignore comments
+                break;
             case 'number':
                 stack.push(Number(token.value));
                 break;

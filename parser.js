@@ -24,6 +24,10 @@ function parse(tokens) {
                     throw new Error('Unexpected end token');
                 }
                 break;
+            case 'comment':
+            case 'multiline_comment':
+                // Ignore comments
+                break;
             case 'variable':
                 currentStatement = { type: 'assignment', variable: '', expression: [] };
                 if (currentBlock) {
