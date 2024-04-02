@@ -1,5 +1,6 @@
 let variables: { [key: string]: any } = {};
 const didiDict: { [key: string]: string } = {
+  
   // Keywords
   "hi didi": "start",
   "bye didi": "end",
