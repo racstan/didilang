@@ -48,8 +48,8 @@ function parse(tokens) {
                 }
                 currentField = 'expression';
                 break;
-            case 'conditional':
-                currentStatement = { type: 'conditional', condition: [], trueBranch: [], falseBranch: [] };
+            case 'agar didi': // Handle 'agar didi' tokens
+                currentStatement = { type: 'if', condition: [], trueBranch: [], falseBranch: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
                 }
@@ -57,6 +57,14 @@ function parse(tokens) {
                     ast.push(currentStatement);
                 }
                 currentField = 'condition';
+                break;
+            case 'warna didi': // Handle 'warna didi' tokens
+                if (currentStatement && currentStatement.type === 'if' && currentField === '') {
+                    currentField = 'falseBranch';
+                }
+                else {
+                    throw new Error('Unexpected warna didi token');
+                }
                 break;
             case 'identifier':
             case 'number':
@@ -86,7 +94,6 @@ function parse(tokens) {
                 if (currentField !== 'condition') {
                     throw new Error('Unexpected left parenthesis or brace');
                 }
-                "";
                 currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
                 break;
             case 'rightParen':
