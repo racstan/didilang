@@ -10,6 +10,7 @@ var didiDict = {
     "bol didi": "print",
     "agar didi": "if",
     "warna didi": "else",
+    "warna agar didi": "else if",
     "jab tak didi": "while",
     "bas kar didi": "break",
     "agla dekh didi": "continue",
@@ -31,7 +32,7 @@ function tokenize(code) {
         throw new Error('Code must start with "hi didi" and end with "bye didi".');
     }
     var tokens = [];
-    var regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|bol didi|didi ye hai|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+(\.\d+)?|==|<=|>=|!=|\/\/.*|\/\*[\s\S]*?\*\/|\+|-|\*|\/|%|\(|\)|\{|\}|,/g;
+    var regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|warna agar didi|bol didi|didi ye hai|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+(\.\d+)?|==|<=|>=|!=|\/\/.*|\/\*[\s\S]*?\*\/|\+|-|\*|\/|%|\(|\)|\{|\}|,/g;
     var match;
     while ((match = regex.exec(code)) !== null) {
         var token = {
