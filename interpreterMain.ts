@@ -78,7 +78,7 @@ function interpret(ast: Statement[]): any[] {
     }
 
     return output;
-}
+} 
 
 function interpretExpression(expression: Expression, variables: {[key: string]: any}): any {
     let stack: any[] = [];
