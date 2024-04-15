@@ -76,7 +76,7 @@ function interpret(ast: Statement[]): any[] {
             console.error('Error interpreting statement:', statement, error);
         }
     }
-
+ 
     return output;
 }  
    
