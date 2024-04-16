@@ -5,6 +5,19 @@ type Token = {
     value: string | number;
 };
 
+type FunctionDefinition = {
+    type: 'function';
+    name: string;
+    params: string[];
+    body: Statement[];
+  };
+  
+  type FunctionCall = {
+    type: 'call';
+    name: string;
+    args: Expression[];
+  };
+
 type Expression = Token[];
 type Statement = {
     type: string;
@@ -15,7 +28,9 @@ type Statement = {
     trueBranch?: Statement[];
     falseBranch?: Statement[];
     statements?: Statement[];
-};
+}| FunctionDefinition | FunctionCall;
+
+let functions: {[key: string]: FunctionDefinition} = {};
 
 function interpret(ast: Statement[]): any[] {
     let output: any[] = [];
@@ -27,6 +42,28 @@ function interpret(ast: Statement[]): any[] {
                 case 'comment':
                 case 'multiline_comment':
                     // Ignore comments
+                    break;
+                case 'function':
+                    if ('name' in statement && 'params' in statement && 'body' in statement) {
+                        functions[statement.name] = statement;
+                    } else {
+                        throw new Error('Invalid function definition');
+                    }
+                    break;
+                case 'call':
+                    if ('name' in statement && 'args' in statement) {
+                        const func = functions[statement.name];
+                        if (!func) throw new Error(`Function ${statement.name} is not defined`);
+                        if (func.params.length !== statement.args.length) throw new Error(`Function ${statement.name} expects ${func.params.length} arguments but got ${statement.args.length}`);
+                        const oldVariables = {...variables};
+                        for (let i = 0; i < func.params.length; i++) {
+                            variables[func.params[i]] = interpretExpression(statement.args[i], variables);
+                        }
+                        const result = interpret(func.body);
+                        variables = oldVariables;
+                    } else {
+                        throw new Error('Invalid function call');
+                    }
                     break;
                 case 'assignment':
                     if (!statement.variable || !statement.expression) throw new Error('Invalid assignment statement');

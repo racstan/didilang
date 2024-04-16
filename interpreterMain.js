@@ -1,7 +1,19 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.interpretExpression = exports.interpret = void 0;
 var operatorUtils_1 = require("./operatorUtils");
+var functions = {};
 function interpret(ast) {
     var output = [];
     var variables = {};
@@ -12,6 +24,32 @@ function interpret(ast) {
                 case 'comment':
                 case 'multiline_comment':
                     // Ignore comments
+                    break;
+                case 'function':
+                    if ('name' in statement && 'params' in statement && 'body' in statement) {
+                        functions[statement.name] = statement;
+                    }
+                    else {
+                        throw new Error('Invalid function definition');
+                    }
+                    break;
+                case 'call':
+                    if ('name' in statement && 'args' in statement) {
+                        var func = functions[statement.name];
+                        if (!func)
+                            throw new Error("Function ".concat(statement.name, " is not defined"));
+                        if (func.params.length !== statement.args.length)
+                            throw new Error("Function ".concat(statement.name, " expects ").concat(func.params.length, " arguments but got ").concat(statement.args.length));
+                        var oldVariables = __assign({}, variables);
+                        for (var i = 0; i < func.params.length; i++) {
+                            variables[func.params[i]] = interpretExpression(statement.args[i], variables);
+                        }
+                        var result = interpret(func.body);
+                        variables = oldVariables;
+                    }
+                    else {
+                        throw new Error('Invalid function call');
+                    }
                     break;
                 case 'assignment':
                     if (!statement.variable || !statement.expression)
