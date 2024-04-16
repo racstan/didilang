@@ -24,6 +24,46 @@ function parse(tokens) {
                     throw new Error('Unexpected end token');
                 }
                 break;
+            case 'function':
+                currentStatement = { type: 'function', name: '', params: [], body: [] };
+                if (currentBlock) {
+                    currentBlock.push(currentStatement);
+                }
+                else {
+                    ast.push(currentStatement);
+                }
+                currentField = 'name';
+                break;
+            case 'call':
+                currentStatement = { type: 'call', name: '', args: [] };
+                if (currentBlock) {
+                    currentBlock.push(currentStatement);
+                }
+                else {
+                    ast.push(currentStatement);
+                }
+                currentField = 'name';
+                break;
+            case 'function':
+                currentStatement = { type: 'function', name: '', params: [], body: [] };
+                if (currentBlock) {
+                    currentBlock.push(currentStatement);
+                }
+                else {
+                    ast.push(currentStatement);
+                }
+                currentField = 'name';
+                break;
+            case 'call':
+                currentStatement = { type: 'call', name: '', args: [] };
+                if (currentBlock) {
+                    currentBlock.push(currentStatement);
+                }
+                else {
+                    ast.push(currentStatement);
+                }
+                currentField = 'name';
+                break;
             case 'comment':
             case 'multiline_comment':
                 // Ignore comments
