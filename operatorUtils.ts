@@ -1,6 +1,6 @@
-import { FunctionDefinition } from './types';
+import { FunctionDefinition,interpret } from './interpreterMain';
 
-function applyOperatorToStack(stack: any[], functions: {[key: string]: FunctionDefinition}) {
+function applyOperatorToStack(stack: any[], functions: {[key: string]: FunctionDefinition}, variables: {[key: string]: any}) {
   const right = stack.pop();
   const operator = stack.pop();
   const left = stack.pop();
@@ -22,9 +22,6 @@ function applyOperatorToStack(stack: any[], functions: {[key: string]: FunctionD
   }
 }
 
-
-  stack.push(applyOperator(operator, left, right));
-}
   
   function applyOperator(operator: string, operand1: any, operand2: any): any {
     switch (operator) {

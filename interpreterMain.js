@@ -154,7 +154,7 @@ function interpretExpression(expression, variables) {
             case 'arithmetic_operator':
             case 'operator':
                 while (stack.length > 1 && precedence[stack[stack.length - 2]] >= precedence[token.value]) {
-                    (0, operatorUtils_1.applyOperatorToStack)(stack);
+                    (0, operatorUtils_1.applyOperatorToStack)(stack, functions, variables);
                 }
                 stack.push(token.value);
                 break;
@@ -163,7 +163,7 @@ function interpretExpression(expression, variables) {
         }
     }
     while (stack.length > 1) {
-        (0, operatorUtils_1.applyOperatorToStack)(stack);
+        (0, operatorUtils_1.applyOperatorToStack)(stack, functions, variables);
     }
     return stack[0];
 }

@@ -5,7 +5,7 @@ type Token = {
     value: string | number;
 };
 
-type FunctionDefinition = {
+export type FunctionDefinition = {
     type: 'function';
     name: string;
     params: string[];
@@ -159,7 +159,7 @@ function interpretExpression(expression: Expression, variables: {[key: string]: 
             case 'arithmetic_operator':
             case 'operator':
                 while (stack.length > 1 && precedence[stack[stack.length - 2]] >= precedence[token.value]) {
-                    applyOperatorToStack(stack);
+                    applyOperatorToStack(stack, functions, variables);
                 }
                 stack.push(token.value);
                 break;
@@ -169,7 +169,7 @@ function interpretExpression(expression: Expression, variables: {[key: string]: 
     }
 
     while (stack.length > 1) {
-        applyOperatorToStack(stack);
+        applyOperatorToStack(stack, functions, variables);
     }
 
     return stack[0];
