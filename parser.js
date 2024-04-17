@@ -58,6 +58,31 @@ function parse(tokens) {
                 }
                 currentField = 'variable';
                 break;
+            case 'delimiter':
+                switch (token.value) {
+                    case '(':
+                    case '{':
+                        if (currentField !== 'condition' && currentField !== 'params') {
+                            throw new Error('Unexpected left parenthesis or brace');
+                        }
+                        currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
+                        break;
+                    case ')':
+                    case '}':
+                        if (currentField !== 'trueBranch' && currentField !== 'falseBranch' && currentField !== 'params') {
+                            throw new Error('Unexpected right parenthesis or brace');
+                        }
+                        currentField = '';
+                        break;
+                    case ',':
+                        if (currentField !== 'params') {
+                            throw new Error('Unexpected comma');
+                        }
+                        break;
+                    default:
+                        throw new Error("Unexpected delimiter: ".concat(token.value));
+                }
+                break;
             case 'print':
                 currentStatement = { type: 'output', expression: [] };
                 if (currentBlock) {
@@ -95,6 +120,10 @@ function parse(tokens) {
                         currentStatement.variable = token.value;
                         currentField = 'expression';
                     }
+                    else if (currentField === 'name') {
+                        currentStatement.name = token.value;
+                        currentField = 'params';
+                    }
                     else if (Array.isArray(currentStatement[currentField])) {
                         currentStatement[currentField].push({ type: token.type, value: token.value });
                     }
@@ -108,20 +137,6 @@ function parse(tokens) {
                     throw new Error('Unexpected assignment operator');
                 }
                 currentField = 'expression';
-                break;
-            case 'leftParen':
-            case 'leftBrace':
-                if (currentField !== 'condition') {
-                    throw new Error('Unexpected left parenthesis or brace');
-                }
-                currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
-                break;
-            case 'rightParen':
-            case 'rightBrace':
-                if (currentField !== 'trueBranch' && currentField !== 'falseBranch') {
-                    throw new Error('Unexpected right parenthesis or brace');
-                }
-                currentField = '';
                 break;
             default:
                 throw new Error("Unknown token type: ".concat(token.type));

@@ -58,6 +58,16 @@ export function tokenize(code: string): Token[] {
     } else if (/^\/\*[\s\S]*?\*\/$/.test(token.value)) {
       token.type = 'multiline_comment';
       token.value = token.value.slice(2, -2).trim();
+    } else if (/\(/.test(token.value)) { 
+      token.type = 'open_parenthesis';
+    } else if (/\)/.test(token.value)) { 
+      token.type = 'close_parenthesis';
+    } else if (/\{/.test(token.value)) { 
+      token.type = 'open_curly_brace';
+    } else if (/\}/.test(token.value)) { 
+      token.type = 'close_curly_brace';
+    } else if (/,/.test(token.value)) { 
+      token.type = 'comma';
     } else if (/[a-zA-Z_]\w*/.test(token.value)) {
       if (variables[token.value]) {
         token.type = 'variable';
