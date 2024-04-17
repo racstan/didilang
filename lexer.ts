@@ -59,15 +59,17 @@ export function tokenize(code: string): Token[] {
       token.type = 'multiline_comment';
       token.value = token.value.slice(2, -2).trim();
     } else if (/\(/.test(token.value)) { 
-      token.type = 'open_parenthesis';
+      token.type = 'delimiter';
+      token.value = '(';
     } else if (/\)/.test(token.value)) { 
-      token.type = 'close_parenthesis';
+      token.type = 'delimiter';
+      token.value = ')';
     } else if (/\{/.test(token.value)) { 
-      token.type = 'open_curly_brace';
+      token.type = 'delimiter';
+      token.value = '{';
     } else if (/\}/.test(token.value)) { 
-      token.type = 'close_curly_brace';
-    } else if (/,/.test(token.value)) { 
-      token.type = 'comma';
+      token.type = 'delimiter';
+      token.value = '}';
     } else if (/[a-zA-Z_]\w*/.test(token.value)) {
       if (variables[token.value]) {
         token.type = 'variable';
