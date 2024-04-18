@@ -61,7 +61,7 @@ export function parse(tokens: Token[]): Statement[] {
             ast.push(currentStatement);
           }
           currentField = 'variable';
-          break;
+        break;
       case 'delimiter':
         switch (token.value) {
           case '(':
@@ -69,7 +69,9 @@ export function parse(tokens: Token[]): Statement[] {
             if (currentField !== 'condition' && currentField !== 'params') {
               throw new Error('Unexpected left parenthesis or brace');
             }
-            currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
+            if (currentStatement && currentStatement.type === 'if') {
+              currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
+            }
             break;
           case ')':
           case '}':
