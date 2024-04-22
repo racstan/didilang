@@ -4,7 +4,7 @@ type Token = {
     type: string;
     value: string | number;
 };
- 
+  
 export type FunctionDefinition = {
     type: 'function';
     name: string;
