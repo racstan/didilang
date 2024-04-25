@@ -66,22 +66,24 @@ export function parse(tokens: Token[]): Statement[] {
         switch (token.value) {
           case '(':
           case '{':
-            if (currentField !== 'condition' && currentField !== 'params') {
+            if (currentField !== 'condition' && currentField !== 'params' && currentField !== 'args') {
               throw new Error('Unexpected left parenthesis or brace');
             }
             if (currentStatement && currentStatement.type === 'if') {
               currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
+            } else if (currentStatement && currentStatement.type === 'call') {
+              currentField = 'args';
             }
             break;
           case ')':
           case '}':
-            if (currentField !== 'trueBranch' && currentField !== 'falseBranch' && currentField !== 'params') {
+            if (currentField !== 'trueBranch' && currentField !== 'falseBranch' && currentField !== 'params' && currentField !== 'args') {
               throw new Error('Unexpected right parenthesis or brace');
             }
             currentField = '';
             break;
           case ',':
-            if (currentField !== 'params') {
+            if (currentField !== 'params' && currentField !== 'args') {
               throw new Error('Unexpected comma');
             }
             break;

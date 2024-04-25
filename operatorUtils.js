@@ -17,10 +17,10 @@ function applyOperatorToStack(stack, functions, variables) {
     var right = stack.pop();
     var operator = stack.pop();
     var left = stack.pop();
-    if (typeof operator !== 'string' || !['+', '-', '*', '/', '%', '**', '>', '<', '==', '!=', '>=', '<=', '&&', '||'].includes(operator)) {
+    if (!['+', '-', '*', '/', '%', '**', '>', '<', '==', '!=', '>=', '<=', '&&', '||'].includes(operator)) {
         throw new Error("Operator ".concat(operator, " is not supported"));
     }
-    else if (typeof operator === 'string' && operator in functions) {
+    else if (operator in functions) {
         var func = functions[operator];
         if (!func)
             throw new Error("Function ".concat(operator, " is not defined"));
@@ -39,6 +39,9 @@ function applyOperatorToStack(stack, functions, variables) {
 }
 exports.applyOperatorToStack = applyOperatorToStack;
 function applyOperator(operator, operand1, operand2) {
+    if (typeof operand1 !== 'number' || typeof operand2 !== 'number') {
+        throw new Error("Operands must be numbers");
+    }
     switch (operator) {
         case '+':
             return operand1 + operand2;

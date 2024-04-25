@@ -14,6 +14,32 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.interpretExpression = exports.interpret = void 0;
 var operatorUtils_1 = require("./operatorUtils");
 var functions = {};
+function handleStatement(statement, variables, output) {
+    switch (statement.type) {
+        case 'assignment':
+            if (!statement.variable || !statement.expression)
+                throw new Error('Invalid assignment statement');
+            variables[statement.variable] = interpretExpression(statement.expression, variables);
+            break;
+        case 'output':
+            if (!statement.expression)
+                throw new Error('Invalid output statement');
+            output.push(interpretExpression(statement.expression, variables));
+            break;
+        case 'conditional':
+            if (!statement.condition || !statement.trueBranch)
+                throw new Error('Invalid conditional statement');
+            if (interpretExpression(statement.condition, variables) !== 0) {
+                output.push.apply(output, interpret(statement.trueBranch));
+            }
+            else if (statement.falseBranch) {
+                output.push.apply(output, interpret(statement.falseBranch));
+            }
+            break;
+        default:
+            throw new Error("Unknown statement type: ".concat(statement.type));
+    }
+}
 function interpret(ast) {
     var output = [];
     var variables = {};
@@ -51,59 +77,16 @@ function interpret(ast) {
                         throw new Error('Invalid function call');
                     }
                     break;
-                case 'assignment':
-                    if (!statement.variable || !statement.expression)
-                        throw new Error('Invalid assignment statement');
-                    variables[statement.variable] = interpretExpression(statement.expression, variables);
-                    break;
-                case 'output':
-                    if (!statement.expression)
-                        throw new Error('Invalid output statement');
-                    output.push(interpretExpression(statement.expression, variables));
-                    break;
-                case 'conditional':
-                    if (!statement.condition || !statement.trueBranch)
-                        throw new Error('Invalid conditional statement');
-                    if (interpretExpression(statement.condition, variables) !== 0) {
-                        output.push.apply(output, interpret(statement.trueBranch));
-                    }
-                    else if (statement.falseBranch) {
-                        output.push.apply(output, interpret(statement.falseBranch));
-                    }
-                    break;
                 case 'block':
                     if (!statement.statements)
                         throw new Error('Invalid block statement');
                     for (var _a = 0, _b = statement.statements; _a < _b.length; _a++) {
                         var innerStatement = _b[_a];
-                        switch (innerStatement.type) {
-                            case 'assignment':
-                                if (!innerStatement.variable || !innerStatement.expression)
-                                    throw new Error('Invalid assignment statement');
-                                variables[innerStatement.variable] = interpretExpression(innerStatement.expression, variables);
-                                break;
-                            case 'output':
-                                if (!innerStatement.expression)
-                                    throw new Error('Invalid output statement');
-                                output.push(interpretExpression(innerStatement.expression, variables));
-                                break;
-                            case 'conditional':
-                                if (!innerStatement.condition || !innerStatement.trueBranch)
-                                    throw new Error('Invalid conditional statement');
-                                if (interpretExpression(innerStatement.condition, variables) !== 0) {
-                                    output.push.apply(output, interpret(innerStatement.trueBranch));
-                                }
-                                else if (innerStatement.falseBranch) {
-                                    output.push.apply(output, interpret(innerStatement.falseBranch));
-                                }
-                                break;
-                            default:
-                                throw new Error("Unknown inner statement type: ".concat(innerStatement.type));
-                        }
+                        handleStatement(innerStatement, variables, output);
                     }
                     break;
                 default:
-                    throw new Error("Unknown statement type: ".concat(statement.type));
+                    handleStatement(statement, variables, output);
             }
         }
         catch (error) {

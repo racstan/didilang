@@ -55,22 +55,6 @@ function tokenize(code) {
             token.type = 'multiline_comment';
             token.value = token.value.slice(2, -2).trim();
         }
-        else if (/\(/.test(token.value)) {
-            token.type = 'delimiter';
-            token.value = '(';
-        }
-        else if (/\)/.test(token.value)) {
-            token.type = 'delimiter';
-            token.value = ')';
-        }
-        else if (/\{/.test(token.value)) {
-            token.type = 'delimiter';
-            token.value = '{';
-        }
-        else if (/\}/.test(token.value)) {
-            token.type = 'delimiter';
-            token.value = '}';
-        }
         else if (/[a-zA-Z_]\w*/.test(token.value)) {
             if (variables[token.value]) {
                 token.type = 'variable';
