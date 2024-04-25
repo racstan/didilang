@@ -24,7 +24,7 @@ function parse(tokens) {
                     throw new Error('Unexpected end token');
                 }
                 break;
-            case 'function':
+            case 'didi ye function':
                 currentStatement = { type: 'function', name: '', params: [], body: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
@@ -48,7 +48,7 @@ function parse(tokens) {
             case 'multiline_comment':
                 // Ignore comments
                 break;
-            case 'variable':
+            case 'didi ye hai':
                 currentStatement = { type: 'assignment', variable: '', expression: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
@@ -88,7 +88,7 @@ function parse(tokens) {
                         throw new Error("Unexpected delimiter: ".concat(token.value));
                 }
                 break;
-            case 'print':
+            case 'bol didi':
                 currentStatement = { type: 'output', expression: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
