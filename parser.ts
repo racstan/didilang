@@ -32,6 +32,7 @@ export function parse(tokens: Token[]): Statement[] {
         }
         break;
       case 'didi ye function':
+      case 'function':
         currentStatement = { type: 'function', name: '', params: [], body: [] };
         if (currentBlock) {
           currentBlock.push(currentStatement);

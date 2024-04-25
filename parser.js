@@ -25,6 +25,7 @@ function parse(tokens) {
                 }
                 break;
             case 'didi ye function':
+            case 'function':
                 currentStatement = { type: 'function', name: '', params: [], body: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
