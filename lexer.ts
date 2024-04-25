@@ -40,8 +40,7 @@ export function tokenize(code: string): Token[] {
     throw new Error('Code must start with "hi didi" and end with "bye didi".');
   }
   const tokens: Token[] = [];
-  const regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|warna agar didi|bol didi|didi ye hai|didi ye function|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+(\.\d+)?|==|<=|>=|!=|\/\/.*|\/\*[\s\S]*?\*\/|\+|-|\*|\/|%|\(|\)|\{|\}|,/g;  
-  let match;
+  const regex = /(didi ye function|hi didi|bye didi|jab tak didi|agar didi|warna didi|warna agar didi|bol didi|didi ye hai|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+(\.\d+)?|==|<=|>=|!=|\/\/.*|\/\*[\s\S]*?\*\/|\+|-|\*|\/|%|\(|\)|\{|\}|,/g;    let match;
   while ((match = regex.exec(code)) !== null) {
     const token: Token = {
       type: 'unknown',
