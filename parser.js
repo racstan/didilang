@@ -63,13 +63,13 @@ function parse(tokens) {
                 switch (token.value) {
                     case '(':
                     case '{':
-                        if (currentField !== 'condition' && currentField !== 'params' && currentField !== 'args') {
+                        if (currentField !== 'condition' && currentField !== 'params' && currentField !== 'args' && currentField !== 'name') {
                             throw new Error('Unexpected left parenthesis or brace');
                         }
                         if (currentStatement && currentStatement.type === 'if') {
                             currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
                         }
-                        else if (currentStatement && currentStatement.type === 'call') {
+                        else if (currentStatement && (currentStatement.type === 'call' || currentStatement.type === 'function')) {
                             currentField = 'args';
                         }
                         break;
