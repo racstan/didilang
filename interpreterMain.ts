@@ -162,4 +162,4 @@ function interpretExpression(expression: Expression, variables: {[key: string]: 
     return stack[0];
 }
 
-export { interpret, interpretExpression };
+export { interpret, interpretExpression }; 
