@@ -32,36 +32,36 @@ export function parse(tokens: Token[]): Statement[] {
         }
         break;
       case 'didi ye function':
-        case 'function':
-          currentStatement = { type: 'function', name: '', params: [], body: [] };
-          if (currentBlock) {
-            currentBlock.push(currentStatement);
-          } else {
-            ast.push(currentStatement);
-          }
-          currentField = 'params'; // changed from 'name' to 'params'
-          break;
-        case 'call':
-          currentStatement = { type: 'call', name: '', args: [] };
-          if (currentBlock) {
-            currentBlock.push(currentStatement);
-          } else {
-            ast.push(currentStatement);
-          }
-          currentField = 'params'; // changed from 'name' to 'params'
-          break;
+      case 'function':
+        currentStatement = { type: 'function', name: '', params: [], body: [] };
+        if (currentBlock) {
+          currentBlock.push(currentStatement);
+        } else {
+          ast.push(currentStatement);
+        }
+        currentField = 'params';
+        break;
+      case 'call':
+        currentStatement = { type: 'call', name: '', args: [] };
+        if (currentBlock) {
+          currentBlock.push(currentStatement);
+        } else {
+          ast.push(currentStatement);
+        }
+        currentField = 'params';
+        break;
       case 'comment':
       case 'multiline_comment':
         // Ignore comments
         break;
-        case 'didi ye hai':
-          currentStatement = { type: 'assignment', variable: '', expression: [], args: [] };
-          if (currentBlock) {
-            currentBlock.push(currentStatement);
-          } else {
-            ast.push(currentStatement);
-          }
-          currentField = 'variable';
+      case 'didi ye hai':
+        currentStatement = { type: 'assignment', variable: '', expression: [] };
+        if (currentBlock) {
+          currentBlock.push(currentStatement);
+        } else {
+          ast.push(currentStatement);
+        }
+        currentField = 'variable';
         break;
       case 'delimiter':
         switch (token.value) {
@@ -92,26 +92,26 @@ export function parse(tokens: Token[]): Statement[] {
             throw new Error(`Unexpected delimiter: ${token.value}`);
         }
         break;
-        case 'bol didi':
-          currentStatement = { type: 'output', expression: [], args: [] };
-          if (currentBlock) {
-            currentBlock.push(currentStatement);
-          } else {
-            ast.push(currentStatement);
-          }
-          currentField = 'expression';
+      case 'bol didi':
+        currentStatement = { type: 'output', expression: [] };
+        if (currentBlock) {
+          currentBlock.push(currentStatement);
+        } else {
+          ast.push(currentStatement);
+        }
+        currentField = 'expression';
         break;
-        case 'agar didi': // Handle 'agar didi' tokens
-        currentStatement = { type: 'if', condition: [], trueBranch: [], falseBranch: [], args: [] };
+      case 'agar didi':
+        currentStatement = { type: 'if', condition: [], trueBranch: [], falseBranch: [] };
         if (currentBlock) {
           currentBlock.push(currentStatement);
         } else {
           ast.push(currentStatement);
         }
         currentField = 'condition';
-      break;
-      case 'warna didi': // Handle 'warna didi' tokens
-        if (currentStatement && currentStatement.type === 'if' && currentField === '') {
+        break;
+      case 'warna didi':
+        if (currentStatement && currentStatement.type === 'if' && currentField === 'trueBranch') {
           currentField = 'falseBranch';
         } else {
           throw new Error('Unexpected warna didi token');

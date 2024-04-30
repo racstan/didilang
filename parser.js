@@ -33,7 +33,7 @@ function parse(tokens) {
                 else {
                     ast.push(currentStatement);
                 }
-                currentField = 'params'; // changed from 'name' to 'params'
+                currentField = 'params';
                 break;
             case 'call':
                 currentStatement = { type: 'call', name: '', args: [] };
@@ -43,14 +43,14 @@ function parse(tokens) {
                 else {
                     ast.push(currentStatement);
                 }
-                currentField = 'params'; // changed from 'name' to 'params'
+                currentField = 'params';
                 break;
             case 'comment':
             case 'multiline_comment':
                 // Ignore comments
                 break;
             case 'didi ye hai':
-                currentStatement = { type: 'assignment', variable: '', expression: [], args: [] };
+                currentStatement = { type: 'assignment', variable: '', expression: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
                 }
@@ -90,7 +90,7 @@ function parse(tokens) {
                 }
                 break;
             case 'bol didi':
-                currentStatement = { type: 'output', expression: [], args: [] };
+                currentStatement = { type: 'output', expression: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
                 }
@@ -99,8 +99,8 @@ function parse(tokens) {
                 }
                 currentField = 'expression';
                 break;
-            case 'agar didi': // Handle 'agar didi' tokens
-                currentStatement = { type: 'if', condition: [], trueBranch: [], falseBranch: [], args: [] };
+            case 'agar didi':
+                currentStatement = { type: 'if', condition: [], trueBranch: [], falseBranch: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
                 }
@@ -109,8 +109,8 @@ function parse(tokens) {
                 }
                 currentField = 'condition';
                 break;
-            case 'warna didi': // Handle 'warna didi' tokens
-                if (currentStatement && currentStatement.type === 'if' && currentField === '') {
+            case 'warna didi':
+                if (currentStatement && currentStatement.type === 'if' && currentField === 'trueBranch') {
                     currentField = 'falseBranch';
                 }
                 else {
