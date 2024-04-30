@@ -48,7 +48,7 @@ export function parse(tokens: Token[]): Statement[] {
         } else {
           ast.push(currentStatement);
         }
-        currentField = 'params';
+        currentField = 'args'; // changed from 'params' to 'args'
         break;
       case 'comment':
       case 'multiline_comment':
