@@ -50,7 +50,7 @@ function parse(tokens) {
                 // Ignore comments
                 break;
             case 'didi ye hai':
-                currentStatement = { type: 'assignment', variable: '', expression: [] };
+                currentStatement = { type: 'assignment', variable: '', expression: [], args: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
                 }
@@ -90,7 +90,7 @@ function parse(tokens) {
                 }
                 break;
             case 'bol didi':
-                currentStatement = { type: 'output', expression: [] };
+                currentStatement = { type: 'output', expression: [], args: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
                 }
@@ -100,7 +100,7 @@ function parse(tokens) {
                 currentField = 'expression';
                 break;
             case 'agar didi': // Handle 'agar didi' tokens
-                currentStatement = { type: 'if', condition: [], trueBranch: [], falseBranch: [] };
+                currentStatement = { type: 'if', condition: [], trueBranch: [], falseBranch: [], args: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
                 }

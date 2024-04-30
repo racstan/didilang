@@ -54,8 +54,8 @@ export function parse(tokens: Token[]): Statement[] {
       case 'multiline_comment':
         // Ignore comments
         break;
-      case 'didi ye hai':
-          currentStatement = { type: 'assignment', variable: '', expression: [] };
+        case 'didi ye hai':
+          currentStatement = { type: 'assignment', variable: '', expression: [], args: [] };
           if (currentBlock) {
             currentBlock.push(currentStatement);
           } else {
@@ -92,24 +92,24 @@ export function parse(tokens: Token[]): Statement[] {
             throw new Error(`Unexpected delimiter: ${token.value}`);
         }
         break;
-      case 'bol didi':
-        currentStatement = { type: 'output', expression: [] };
-        if (currentBlock) {
-          currentBlock.push(currentStatement);
-        } else {
-          ast.push(currentStatement);
-        }
-        currentField = 'expression';
+        case 'bol didi':
+          currentStatement = { type: 'output', expression: [], args: [] };
+          if (currentBlock) {
+            currentBlock.push(currentStatement);
+          } else {
+            ast.push(currentStatement);
+          }
+          currentField = 'expression';
         break;
-      case 'agar didi': // Handle 'agar didi' tokens
-        currentStatement = { type: 'if', condition: [], trueBranch: [], falseBranch: [] };
+        case 'agar didi': // Handle 'agar didi' tokens
+        currentStatement = { type: 'if', condition: [], trueBranch: [], falseBranch: [], args: [] };
         if (currentBlock) {
           currentBlock.push(currentStatement);
         } else {
           ast.push(currentStatement);
         }
         currentField = 'condition';
-        break;
+      break;
       case 'warna didi': // Handle 'warna didi' tokens
         if (currentStatement && currentStatement.type === 'if' && currentField === '') {
           currentField = 'falseBranch';
@@ -117,24 +117,24 @@ export function parse(tokens: Token[]): Statement[] {
           throw new Error('Unexpected warna didi token');
         }
         break;
-        case 'identifier':
-        case 'number':
-        case 'arithmetic_operator':
-        case 'string':
-          if (currentStatement && currentField) {
-            if (currentField === 'variable') {
-              currentStatement.variable = token.value;
-              currentField = 'expression';
-            } else if (currentField === 'name') {
-              currentStatement.name = token.value;
-              currentField = 'params';
-            } else if (Array.isArray(currentStatement[currentField])) {
-              currentStatement[currentField].push({ type: token.type, value: token.value });
-            } else {
-              throw new Error(`Cannot push to non-array field: ${currentField}`);
-            }
+      case 'identifier':
+      case 'number':
+      case 'arithmetic_operator':
+      case 'string':
+        if (currentStatement && currentField) {
+          if (currentField === 'variable') {
+            currentStatement.variable = token.value;
+            currentField = 'expression';
+          } else if (currentField === 'name') {
+            currentStatement.name = token.value;
+            currentField = 'params';
+          } else if (Array.isArray(currentStatement[currentField])) {
+            currentStatement[currentField].push({ type: token.type, value: token.value });
+          } else {
+            throw new Error(`Cannot push to non-array field: ${currentField}`);
           }
-          break;
+        }
+        break;
       case 'assignment_operator':
         if (currentField !== 'variable') {
           throw new Error('Unexpected assignment operator');
