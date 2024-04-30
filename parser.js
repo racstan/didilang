@@ -33,7 +33,7 @@ function parse(tokens) {
                 else {
                     ast.push(currentStatement);
                 }
-                currentField = 'name';
+                currentField = 'params'; // changed from 'name' to 'params'
                 break;
             case 'call':
                 currentStatement = { type: 'call', name: '', args: [] };
@@ -43,7 +43,7 @@ function parse(tokens) {
                 else {
                     ast.push(currentStatement);
                 }
-                currentField = 'name';
+                currentField = 'params'; // changed from 'name' to 'params'
                 break;
             case 'comment':
             case 'multiline_comment':
