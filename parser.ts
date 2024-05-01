@@ -1,6 +1,6 @@
 type Token = {
   type: string;
-  value: string;
+  value: any;
 };
 
 interface Statement {
@@ -117,6 +117,7 @@ export function parse(tokens: Token[]): Statement[] {
           throw new Error('Unexpected warna didi token');
         }
         break;
+      case 'boolean':
       case 'identifier':
       case 'number':
       case 'arithmetic_operator':

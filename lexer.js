@@ -43,6 +43,10 @@ function tokenize(code) {
         if (didiDict[token.value]) {
             token.type = didiDict[token.value];
         }
+        else if (['sahi', 'galat', 'nalla'].includes(token.value)) {
+            token.type = 'boolean';
+            token.value = token.value === 'sahi' ? true : (token.value === 'galat' ? false : null);
+        }
         else if (/^".*"$/.test(token.value)) {
             token.type = 'string';
             token.value = token.value.slice(1, -1);

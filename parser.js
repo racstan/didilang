@@ -117,6 +117,7 @@ function parse(tokens) {
                     throw new Error('Unexpected warna didi token');
                 }
                 break;
+            case 'boolean':
             case 'identifier':
             case 'number':
             case 'arithmetic_operator':
