@@ -65,7 +65,7 @@ export function tokenize(code: string): Token[] {
     } else if (/[a-zA-Z_]\w*/.test(token.value)) {
       if (variables[token.value]) {
         token.type = 'variable';
-      } else {
+      } else {  
         token.type = 'identifier';
       }
     } else if (/\d+(\.\d+)?/.test(token.value)) {
