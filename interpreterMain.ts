@@ -64,7 +64,6 @@ function interpret(ast: Statement[]): any[] {
             switch (statement.type) {
                 case 'comment':
                 case 'multiline_comment':
-                    // Ignore comments
                     break;
                 case 'function':
                     if ('name' in statement && 'params' in statement && 'body' in statement) {
@@ -128,7 +127,6 @@ function interpretExpression(expression: Expression, variables: {[key: string]: 
         switch (token.type) {
             case 'comment':
             case 'multiline_comment':
-                // Ignore comments
                 break;
             case 'number':
                 stack.push(Number(token.value));
