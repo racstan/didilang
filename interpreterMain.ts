@@ -3,7 +3,7 @@ import { applyOperatorToStack } from './operatorUtils';
 type Token = {
     type: string;
     value: string | number;
-}; 
+};   
     
 export type FunctionDefinition = {
     type: 'function';
