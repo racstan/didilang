@@ -12,7 +12,7 @@ const didiDict: { [key: string]: string } = {
   "jab tak didi": "while",
   "bas kar didi": "break",
   "agla dekh didi": "continue",
-  "didi ye function": "function", // Added function keyword
+  "didi ye function": "function",
 
   // Data types
   "nalla": "null",

@@ -11,7 +11,7 @@ export type FunctionDefinition = {
     params: string[];
     body: Statement[];
 };
-  
+     
 type FunctionCall = {
     type: 'call';
     name: string;
