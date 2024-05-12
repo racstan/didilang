@@ -24,100 +24,36 @@ function parse(tokens) {
                     throw new Error('Unexpected end token');
                 }
                 break;
-            case 'didi ye function':
-            case 'function':
-                currentStatement = { type: 'function', name: '', params: [], body: [] };
-                if (currentBlock) {
-                    currentBlock.push(currentStatement);
-                }
-                else {
-                    ast.push(currentStatement);
-                }
-                currentField = 'params';
-                break;
-            case 'call':
-                currentStatement = { type: 'call', name: '', args: [] };
-                if (currentBlock) {
-                    currentBlock.push(currentStatement);
-                }
-                else {
-                    ast.push(currentStatement);
-                }
-                currentField = 'args'; // changed from 'params' to 'args'
-                break;
-            case 'comment':
-            case 'multiline_comment':
-                // Ignore comments
-                break;
-            case 'didi ye hai':
+            case 'variable':
                 currentStatement = { type: 'assignment', variable: '', expression: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
                 }
                 else {
-                    ast.push(currentStatement);
+                    throw new Error('Variable statement not within a block');
                 }
                 currentField = 'variable';
                 break;
-            case 'delimiter':
-                switch (token.value) {
-                    case '(':
-                    case '{':
-                        if (currentField !== 'condition' && currentField !== 'params' && currentField !== 'args' && currentField !== 'name') {
-                            throw new Error('Unexpected left parenthesis or brace');
-                        }
-                        if (currentStatement && currentStatement.type === 'if') {
-                            currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
-                        }
-                        else if (currentStatement && (currentStatement.type === 'call' || currentStatement.type === 'function')) {
-                            currentField = 'args';
-                        }
-                        break;
-                    case ')':
-                    case '}':
-                        if (currentField !== 'trueBranch' && currentField !== 'falseBranch' && currentField !== 'params' && currentField !== 'args') {
-                            throw new Error('Unexpected right parenthesis or brace');
-                        }
-                        currentField = '';
-                        break;
-                    case ',':
-                        if (currentField !== 'params' && currentField !== 'args') {
-                            throw new Error('Unexpected comma');
-                        }
-                        break;
-                    default:
-                        throw new Error("Unexpected delimiter: ".concat(token.value));
-                }
-                break;
-            case 'bol didi':
+            case 'print':
                 currentStatement = { type: 'output', expression: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
                 }
                 else {
-                    ast.push(currentStatement);
+                    throw new Error('Print statement not within a block');
                 }
                 currentField = 'expression';
                 break;
-            case 'agar didi':
-                currentStatement = { type: 'if', condition: [], trueBranch: [], falseBranch: [] };
+            case 'conditional':
+                currentStatement = { type: 'conditional', condition: [], trueBranch: [], falseBranch: [] };
                 if (currentBlock) {
                     currentBlock.push(currentStatement);
                 }
                 else {
-                    ast.push(currentStatement);
+                    throw new Error('Conditional statement not within a block');
                 }
                 currentField = 'condition';
                 break;
-            case 'warna didi':
-                if (currentStatement && currentStatement.type === 'if' && currentField === 'trueBranch') {
-                    currentField = 'falseBranch';
-                }
-                else {
-                    throw new Error('Unexpected warna didi token');
-                }
-                break;
-            case 'boolean':
             case 'identifier':
             case 'number':
             case 'arithmetic_operator':
@@ -126,10 +62,6 @@ function parse(tokens) {
                     if (currentField === 'variable') {
                         currentStatement.variable = token.value;
                         currentField = 'expression';
-                    }
-                    else if (currentField === 'name') {
-                        currentStatement.name = token.value;
-                        currentField = 'params';
                     }
                     else if (Array.isArray(currentStatement[currentField])) {
                         currentStatement[currentField].push({ type: token.type, value: token.value });
@@ -144,6 +76,20 @@ function parse(tokens) {
                     throw new Error('Unexpected assignment operator');
                 }
                 currentField = 'expression';
+                break;
+            case 'leftParen':
+            case 'leftBrace':
+                if (currentField !== 'condition') {
+                    throw new Error('Unexpected left parenthesis or brace');
+                }
+                currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
+                break;
+            case 'rightParen':
+            case 'rightBrace':
+                if (currentField !== 'trueBranch' && currentField !== 'falseBranch') {
+                    throw new Error('Unexpected right parenthesis or brace');
+                }
+                currentField = '';
                 break;
             default:
                 throw new Error("Unknown token type: ".concat(token.type));
