@@ -1,111 +1,88 @@
-import { applyOperatorToStack } from './operatorUtils';
+"use strict";
+import { applyOperatorToStack } from "./operatorUtils";
 
-type Token = {
+interface Token {
     type: string;
-    value: string | number;
-};   
-    
-export type FunctionDefinition = {
-    type: 'function';
-    name: string;
-    params: string[];
-    body: Statement[];
-};
-     
-type FunctionCall = {
-    type: 'call';
-    name: string;
-    args: Expression[];
-};
-
-type Expression = Token[];
-type Statement = {
-    type: string;
-    variable?: string;
-    value?: Expression;
-    expression?: Expression;
-    condition?: Expression;
-    trueBranch?: Statement[];
-    falseBranch?: Statement[];
-    statements?: Statement[];
-}| FunctionDefinition | FunctionCall;
-
-let functions: {[key: string]: FunctionDefinition} = {};
-
-function handleStatement(statement: Statement, variables: {[key: string]: any}, output: any[]): void {
-    switch (statement.type) {
-        case 'assignment':
-            if (!statement.variable || !statement.expression) throw new Error('Invalid assignment statement');
-            variables[statement.variable] = interpretExpression(statement.expression, variables);
-            break;
-        case 'output':
-            if (!statement.expression) throw new Error('Invalid output statement');
-            output.push(interpretExpression(statement.expression, variables));
-            break;
-        case 'conditional':
-            if (!statement.condition || !statement.trueBranch) throw new Error('Invalid conditional statement');
-            if (interpretExpression(statement.condition, variables) !== 0) {
-                output.push(...interpret(statement.trueBranch, variables, output)); // Fixed: Added missing arguments
-            } else if (statement.falseBranch) {
-                output.push(...interpret(statement.falseBranch, variables, output)); // Fixed: Added missing arguments
-            }
-            break;
-        default:
-            throw new Error(`Unknown statement type: ${statement.type}`);
-    }
+    value: string;
 }
 
-function interpret(ast: Statement[], variables: {[key: string]: any} = {}, output: any[] = []): any[] { // Fixed: Added parameters to match usage
-    // Removed the initialization of variables and output here to use the passed parameters instead
+interface Statement {
+    type: string;
+    [key: string]: any;
+}
+
+interface VariableMap {
+    [key: string]: any;
+}
+
+export function interpret(ast: Statement[]): any[] {
+    let output: any[] = [];
+    let variables: VariableMap = {};
 
     for (const statement of ast) {
         try {
             switch (statement.type) {
-                case 'comment':
-                case 'multiline_comment':
+                case 'assignment':
+                    if (!statement.variable || !statement.expression)
+                        throw new Error('Invalid assignment statement');
+                    variables[statement.variable] = interpretExpression(statement.expression, variables);
                     break;
-                case 'function':
-                    if ('name' in statement && 'params' in statement && 'body' in statement) {
-                        functions[statement.name] = statement;
-                    } else {
-                        throw new Error('Invalid function definition');
-                    }
+                case 'output':
+                    if (!statement.expression)
+                        throw new Error('Invalid output statement');
+                    output.push(interpretExpression(statement.expression, variables));
                     break;
-                case 'call':
-                    if ('name' in statement && 'args' in statement) {
-                        const func = functions[statement.name];
-                        if (!func) throw new Error(`Function ${statement.name} is not defined`);
-                        if (func.params.length !== statement.args.length) throw new Error(`Function ${statement.name} expects ${func.params.length} arguments but got ${statement.args.length}`);
-                        const oldVariables = {...variables};
-                        for (let i = 0; i < func.params.length; i++) {
-                            variables[func.params[i]] = interpretExpression(statement.args[i], variables);
-                        }
-                        const result = interpret(func.body, variables, output); // Fixed: Added missing arguments
-                        variables = oldVariables;
-                    } else {
-                        throw new Error('Invalid function call');
+                case 'conditional':
+                    if (!statement.condition || !statement.trueBranch)
+                        throw new Error('Invalid conditional statement');
+                    if (interpretExpression(statement.condition, variables) !== 0) {
+                        output.push(...interpret(statement.trueBranch));
+                    } else if (statement.falseBranch) {
+                        output.push(...interpret(statement.falseBranch));
                     }
                     break;
                 case 'block':
-                    if (!statement.statements) throw new Error('Invalid block statement');
+                    if (!statement.statements)
+                        throw new Error('Invalid block statement');
                     for (const innerStatement of statement.statements) {
-                        handleStatement(innerStatement, variables, output);
+                        switch (innerStatement.type) {
+                            case 'assignment':
+                                if (!innerStatement.variable || !innerStatement.expression)
+                                    throw new Error('Invalid assignment statement');
+                                variables[innerStatement.variable] = interpretExpression(innerStatement.expression, variables);
+                                break;
+                            case 'output':
+                                if (!innerStatement.expression)
+                                    throw new Error('Invalid output statement');
+                                output.push(interpretExpression(innerStatement.expression, variables));
+                                break;
+                            case 'conditional':
+                                if (!innerStatement.condition || !innerStatement.trueBranch)
+                                    throw new Error('Invalid conditional statement');
+                                if (interpretExpression(innerStatement.condition, variables) !== 0) {
+                                    output.push(...interpret(innerStatement.trueBranch));
+                                } else if (innerStatement.falseBranch) {
+                                    output.push(...interpret(innerStatement.falseBranch));
+                                }
+                                break;
+                            default:
+                                throw new Error(`Unknown inner statement type: ${innerStatement.type}`);
+                        }
                     }
                     break;
                 default:
-                    handleStatement(statement, variables, output);
+                    throw new Error(`Unknown statement type: ${statement.type}`);
             }
         } catch (error) {
             console.error('Error interpreting statement:', statement, error);
         }
     }
- 
     return output;
-}  
+}
 
-function interpretExpression(expression: Expression, variables: {[key: string]: any}): any {
+function interpretExpression(expression: Token[], variables: VariableMap): any {
     let stack: any[] = [];
-    let precedence: {[key: string]: number} = {
+    const precedence: { [key: string]: number } = {
         '+': 1,
         '-': 1,
         '*': 2,
@@ -124,9 +101,6 @@ function interpretExpression(expression: Expression, variables: {[key: string]: 
 
     for (const token of expression) {
         switch (token.type) {
-            case 'comment':
-            case 'multiline_comment':
-                break;
             case 'number':
                 stack.push(Number(token.value));
                 break;
@@ -143,7 +117,7 @@ function interpretExpression(expression: Expression, variables: {[key: string]: 
             case 'arithmetic_operator':
             case 'operator':
                 while (stack.length > 1 && precedence[stack[stack.length - 2]] >= precedence[token.value]) {
-                    applyOperatorToStack(stack, functions, variables);
+                    applyOperatorToStack(stack);
                 }
                 stack.push(token.value);
                 break;
@@ -151,12 +125,8 @@ function interpretExpression(expression: Expression, variables: {[key: string]: 
                 throw new Error(`Unknown token type: ${token.type}`);
         }
     }
-
     while (stack.length > 1) {
-        applyOperatorToStack(stack, functions, variables);
+        applyOperatorToStack(stack);
     }
-
     return stack[0];
-} 
-
-export { interpret, interpretExpression };
+}
