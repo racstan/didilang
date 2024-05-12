@@ -1,155 +1,112 @@
-type Token = {
-  type: string;
-  value: any;
-};
+"use strict";
 
-interface Statement {
-  type: string;
-  [key: string]: any;
+interface Token {
+    type: string;
+    value: string;
 }
 
-export function parse(tokens: Token[]): Statement[] {
-  if (tokens.length === 0) {
-    throw new Error('No tokens to parse');
-  }
+type ASTNode = Block | Statement;
 
-  const ast: Statement[] = [];
-  let currentBlock: Statement[] | undefined;
-  let currentStatement: Statement | undefined;
-  let currentField: string = '';
+interface Statement {
+    type: string;
+    [key: string]: any;
+}
 
-  for (const token of tokens) {
-    switch (token.type) {
-      case 'start':
-        currentBlock = [];
-        break;
-      case 'end':
-        if (currentBlock) {
-          ast.push({ type: 'block', statements: currentBlock });
-          currentBlock = undefined;
-        } else {
-          throw new Error('Unexpected end token');
-        }
-        break;
-      case 'didi ye function':
-      case 'function':
-        currentStatement = { type: 'function', name: '', params: [], body: [] };
-        if (currentBlock) {
-          currentBlock.push(currentStatement);
-        } else {
-          ast.push(currentStatement);
-        }
-        currentField = 'params';
-        break;
-      case 'call':
-        currentStatement = { type: 'call', name: '', args: [] };
-        if (currentBlock) {
-          currentBlock.push(currentStatement);
-        } else {
-          ast.push(currentStatement);
-        }
-        currentField = 'args'; // changed from 'params' to 'args'
-        break;
-      case 'comment':
-      case 'multiline_comment':
-        // Ignore comments
-        break;
-      case 'didi ye hai':
-        currentStatement = { type: 'assignment', variable: '', expression: [] };
-        if (currentBlock) {
-          currentBlock.push(currentStatement);
-        } else {
-          ast.push(currentStatement);
-        }
-        currentField = 'variable';
-        break;
-      case 'delimiter':
-        switch (token.value) {
-          case '(':
-          case '{':
-            if (currentField !== 'condition' && currentField !== 'params' && currentField !== 'args' && currentField !== 'name') {
-              throw new Error('Unexpected left parenthesis or brace');
-            }
-            if (currentStatement && currentStatement.type === 'if') {
-              currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
-            } else if (currentStatement && (currentStatement.type === 'call' || currentStatement.type === 'function')) {
-              currentField = 'args';
-            }
-            break;
-          case ')':
-          case '}':
-            if (currentField !== 'trueBranch' && currentField !== 'falseBranch' && currentField !== 'params' && currentField !== 'args') {
-              throw new Error('Unexpected right parenthesis or brace');
-            }
-            currentField = '';
-            break;
-          case ',':
-            if (currentField !== 'params' && currentField !== 'args') {
-              throw new Error('Unexpected comma');
-            }
-            break;
-          default:
-            throw new Error(`Unexpected delimiter: ${token.value}`);
-        }
-        break;
-      case 'bol didi':
-        currentStatement = { type: 'output', expression: [] };
-        if (currentBlock) {
-          currentBlock.push(currentStatement);
-        } else {
-          ast.push(currentStatement);
-        }
-        currentField = 'expression';
-        break;
-      case 'agar didi':
-        currentStatement = { type: 'if', condition: [], trueBranch: [], falseBranch: [] };
-        if (currentBlock) {
-          currentBlock.push(currentStatement);
-        } else {
-          ast.push(currentStatement);
-        }
-        currentField = 'condition';
-        break;
-      case 'warna didi':
-        if (currentStatement && currentStatement.type === 'if' && currentField === 'trueBranch') {
-          currentField = 'falseBranch';
-        } else {
-          throw new Error('Unexpected warna didi token');
-        }
-        break;
-      case 'boolean':
-      case 'identifier':
-      case 'number':
-      case 'arithmetic_operator':
-      case 'string':
-        if (currentStatement && currentField) {
-          if (currentField === 'variable') {
-            currentStatement.variable = token.value;
-            currentField = 'expression';
-          } else if (currentField === 'name') {
-            currentStatement.name = token.value;
-            currentField = 'params';
-          } else if (Array.isArray(currentStatement[currentField])) {
-            currentStatement[currentField].push({ type: token.type, value: token.value });
-          } else {
-            throw new Error(`Cannot push to non-array field: ${currentField}`);
-          }
-        }
-        break;
-      case 'assignment_operator':
-        if (currentField !== 'variable') {
-          throw new Error('Unexpected assignment operator');
-        }
-        currentField = 'expression';
-        break;
-      default:
-        throw new Error(`Unknown token type: ${token.type}`);
+interface Block {
+    type: 'block';
+    statements: ASTNode[];
+}
+
+export function parse(tokens: Token[]): Block[] {
+    if (tokens.length === 0) {
+        throw new Error('No tokens to parse');
     }
-  }
+    const ast: Block[] = [];
+    let currentBlock: ASTNode[] | undefined;
+    let currentStatement: Statement | undefined;
+    let currentField = '';
 
-  if (currentBlock) {
-    throw new Error('Unclosed block');
-  }
-
-  return ast;
+    for (const token of tokens) {
+        switch (token.type) {
+            case 'start':
+                currentBlock = [];
+                break;
+            case 'end':
+                if (currentBlock) {
+                    ast.push({ type: 'block', statements: currentBlock });
+                    currentBlock = undefined;
+                } else {
+                    throw new Error('Unexpected end token');
+                }
+                break;
+            case 'variable':
+                currentStatement = { type: 'assignment', variable: '', expression: [] };
+                if (currentBlock) {
+                    currentBlock.push(currentStatement);
+                } else {
+                    throw new Error('Variable statement not within a block');
+                }
+                currentField = 'variable';
+                break;
+            case 'print':
+                currentStatement = { type: 'output', expression: [] };
+                if (currentBlock) {
+                    currentBlock.push(currentStatement);
+                } else {
+                    throw new Error('Print statement not within a block');
+                }
+                currentField = 'expression';
+                break;
+            case 'conditional':
+                currentStatement = { type: 'conditional', condition: [], trueBranch: [], falseBranch: [] };
+                if (currentBlock) {
+                    currentBlock.push(currentStatement);
+                } else {
+                    throw new Error('Conditional statement not within a block');
+                }
+                currentField = 'condition';
+                break;
+            case 'identifier':
+            case 'number':
+            case 'arithmetic_operator':
+            case 'string':
+                if (currentStatement && currentField) {
+                    if (currentField === 'variable') {
+                        currentStatement.variable = token.value;
+                        currentField = 'expression';
+                    } else if (Array.isArray(currentStatement[currentField])) {
+                        currentStatement[currentField].push({ type: token.type, value: token.value });
+                    } else {
+                        throw new Error(`Cannot push to non-array field: ${currentField}`);
+                    }
+                }
+                break;
+            case 'assignment_operator':
+                if (currentField !== 'variable') {
+                    throw new Error('Unexpected assignment operator');
+                }
+                currentField = 'expression';
+                break;
+            case 'leftParen':
+            case 'leftBrace':
+                if (currentField !== 'condition') {
+                    throw new Error('Unexpected left parenthesis or brace');
+                }
+                currentField = currentField === 'condition' ? 'trueBranch' : 'falseBranch';
+                break;
+            case 'rightParen':
+            case 'rightBrace':
+                if (currentField !== 'trueBranch' && currentField !== 'falseBranch') {
+                    throw new Error('Unexpected right parenthesis or brace');
+                }
+                currentField = '';
+                break;
+            default:
+                throw new Error(`Unknown token type: ${token.type}`);
+        }
+    }
+    if (currentBlock) {
+        throw new Error('Unclosed block');
+    }
+    return ast;
 }
