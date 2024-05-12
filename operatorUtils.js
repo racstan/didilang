@@ -26,11 +26,18 @@ function applyOperatorToStack(stack, functions, variables) {
             throw new Error("Function ".concat(operator, " is not defined"));
         if (func.params.length !== 2)
             throw new Error("Function ".concat(operator, " expects 2 arguments but got ").concat(func.params.length));
-        var oldVariables = __assign({}, variables);
+        var oldVariables_1 = __assign({}, variables);
         variables[func.params[0]] = left;
         variables[func.params[1]] = right;
-        var result = (0, interpreterMain_1.interpret)(func.body);
-        variables = oldVariables;
+        var result = (0, interpreterMain_1.interpret)(func.body, variables);
+        Object.keys(variables).forEach(function (key) {
+            if (oldVariables_1.hasOwnProperty(key)) {
+                variables[key] = oldVariables_1[key];
+            }
+            else {
+                delete variables[key];
+            }
+        });
         stack.push(result);
     }
     else {

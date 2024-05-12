@@ -30,26 +30,26 @@ function handleStatement(statement, variables, output) {
             if (!statement.condition || !statement.trueBranch)
                 throw new Error('Invalid conditional statement');
             if (interpretExpression(statement.condition, variables) !== 0) {
-                output.push.apply(output, interpret(statement.trueBranch));
+                output.push.apply(output, interpret(statement.trueBranch, variables, output)); // Fixed: Added missing arguments
             }
             else if (statement.falseBranch) {
-                output.push.apply(output, interpret(statement.falseBranch));
+                output.push.apply(output, interpret(statement.falseBranch, variables, output)); // Fixed: Added missing arguments
             }
             break;
         default:
             throw new Error("Unknown statement type: ".concat(statement.type));
     }
 }
-function interpret(ast) {
-    var output = [];
-    var variables = {};
+function interpret(ast, variables, output) {
+    // Removed the initialization of variables and output here to use the passed parameters instead
+    if (variables === void 0) { variables = {}; }
+    if (output === void 0) { output = []; }
     for (var _i = 0, ast_1 = ast; _i < ast_1.length; _i++) {
         var statement = ast_1[_i];
         try {
             switch (statement.type) {
                 case 'comment':
                 case 'multiline_comment':
-                    // Ignore comments
                     break;
                 case 'function':
                     if ('name' in statement && 'params' in statement && 'body' in statement) {
@@ -70,7 +70,7 @@ function interpret(ast) {
                         for (var i = 0; i < func.params.length; i++) {
                             variables[func.params[i]] = interpretExpression(statement.args[i], variables);
                         }
-                        var result = interpret(func.body);
+                        var result = interpret(func.body, variables, output); // Fixed: Added missing arguments
                         variables = oldVariables;
                     }
                     else {
@@ -119,7 +119,6 @@ function interpretExpression(expression, variables) {
         switch (token.type) {
             case 'comment':
             case 'multiline_comment':
-                // Ignore comments
                 break;
             case 'number':
                 stack.push(Number(token.value));
