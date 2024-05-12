@@ -22,7 +22,7 @@ function interpret(ast) {
                 case 'conditional':
                     if (!statement.condition || !statement.trueBranch)
                         throw new Error('Invalid conditional statement');
-                    if (interpretExpression(statement.condition, variables) !== 0) {
+                    if (interpretExpression(statement.condition, variables)) {
                         output.push.apply(output, interpret(statement.trueBranch));
                     }
                     else if (statement.falseBranch) {
@@ -48,7 +48,7 @@ function interpret(ast) {
                             case 'conditional':
                                 if (!innerStatement.condition || !innerStatement.trueBranch)
                                     throw new Error('Invalid conditional statement');
-                                if (interpretExpression(innerStatement.condition, variables) !== 0) {
+                                if (interpretExpression(innerStatement.condition, variables)) {
                                     output.push.apply(output, interpret(innerStatement.trueBranch));
                                 }
                                 else if (innerStatement.falseBranch) {
@@ -104,6 +104,9 @@ function interpretExpression(expression, variables) {
                 break;
             case 'string':
                 stack.push(token.value);
+                break;
+            case 'boolean':
+                stack.push(token.value === 'true');
                 break;
             case 'arithmetic_operator':
             case 'operator':

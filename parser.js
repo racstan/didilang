@@ -71,6 +71,17 @@ function parse(tokens) {
                     }
                 }
                 break;
+            case 'boolean':
+                if (currentStatement && currentField && (token.value === 'sahi' || token.value === 'galat')) {
+                    var booleanValue = token.value === 'sahi' ? true : false;
+                    if (Array.isArray(currentStatement[currentField])) {
+                        currentStatement[currentField].push({ type: 'boolean', value: booleanValue });
+                    }
+                    else {
+                        throw new Error("Cannot push to non-array field: ".concat(currentField, " for boolean values"));
+                    }
+                }
+                break;
             case 'assignment_operator':
                 if (currentField !== 'variable') {
                     throw new Error('Unexpected assignment operator');
