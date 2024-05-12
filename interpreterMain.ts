@@ -45,9 +45,9 @@ function handleStatement(statement: Statement, variables: {[key: string]: any}, 
         case 'conditional':
             if (!statement.condition || !statement.trueBranch) throw new Error('Invalid conditional statement');
             if (interpretExpression(statement.condition, variables) !== 0) {
-                output.push(...interpret(statement.trueBranch));
+                output.push(...interpret(statement.trueBranch, variables, output)); // Fixed: Added missing arguments
             } else if (statement.falseBranch) {
-                output.push(...interpret(statement.falseBranch));
+                output.push(...interpret(statement.falseBranch, variables, output)); // Fixed: Added missing arguments
             }
             break;
         default:
@@ -55,9 +55,8 @@ function handleStatement(statement: Statement, variables: {[key: string]: any}, 
     }
 }
 
-function interpret(ast: Statement[]): any[] {
-    let output: any[] = [];
-    let variables: {[key: string]: any} = {};
+function interpret(ast: Statement[], variables: {[key: string]: any} = {}, output: any[] = []): any[] { // Fixed: Added parameters to match usage
+    // Removed the initialization of variables and output here to use the passed parameters instead
 
     for (const statement of ast) {
         try {
@@ -81,7 +80,7 @@ function interpret(ast: Statement[]): any[] {
                         for (let i = 0; i < func.params.length; i++) {
                             variables[func.params[i]] = interpretExpression(statement.args[i], variables);
                         }
-                        const result = interpret(func.body);
+                        const result = interpret(func.body, variables, output); // Fixed: Added missing arguments
                         variables = oldVariables;
                     } else {
                         throw new Error('Invalid function call');
@@ -160,4 +159,4 @@ function interpretExpression(expression: Expression, variables: {[key: string]: 
     return stack[0];
 } 
 
-export { interpret, interpretExpression }; 
+export { interpret, interpretExpression };

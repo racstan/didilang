@@ -14,8 +14,14 @@ function applyOperatorToStack(stack: any[], functions: {[key: string]: FunctionD
     const oldVariables = {...variables};
     variables[func.params[0]] = left;
     variables[func.params[1]] = right;
-    const result = interpret(func.body);
-    variables = oldVariables;
+    const result = interpret(func.body, variables);
+    Object.keys(variables).forEach(key => {
+      if (oldVariables.hasOwnProperty(key)) {
+        variables[key] = oldVariables[key];
+      } else {
+        delete variables[key];
+      }
+    });
     stack.push(result);
   } else {
     stack.push(applyOperator(operator, left, right));
