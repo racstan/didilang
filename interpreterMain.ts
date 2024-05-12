@@ -35,7 +35,7 @@ export function interpret(ast: Statement[]): any[] {
                 case 'conditional':
                     if (!statement.condition || !statement.trueBranch)
                         throw new Error('Invalid conditional statement');
-                    if (interpretExpression(statement.condition, variables) !== 0) {
+                    if (interpretExpression(statement.condition, variables)) {
                         output.push(...interpret(statement.trueBranch));
                     } else if (statement.falseBranch) {
                         output.push(...interpret(statement.falseBranch));
@@ -59,7 +59,7 @@ export function interpret(ast: Statement[]): any[] {
                             case 'conditional':
                                 if (!innerStatement.condition || !innerStatement.trueBranch)
                                     throw new Error('Invalid conditional statement');
-                                if (interpretExpression(innerStatement.condition, variables) !== 0) {
+                                if (interpretExpression(innerStatement.condition, variables)) {
                                     output.push(...interpret(innerStatement.trueBranch));
                                 } else if (innerStatement.falseBranch) {
                                     output.push(...interpret(innerStatement.falseBranch));
@@ -113,6 +113,9 @@ function interpretExpression(expression: Token[], variables: VariableMap): any {
                 break;
             case 'string':
                 stack.push(token.value);
+                break;
+            case 'boolean':
+                stack.push(token.value === 'true');
                 break;
             case 'arithmetic_operator':
             case 'operator':
