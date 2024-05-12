@@ -10,11 +10,9 @@ var didiDict = {
     "bol didi": "print",
     "agar didi": "if",
     "warna didi": "else",
-    "warna agar didi": "else if",
     "jab tak didi": "while",
     "bas kar didi": "break",
     "agla dekh didi": "continue",
-    "didi ye function": "function", // Added function keyword
     // Data types
     "nalla": "null",
     "sahi": "true",
@@ -33,7 +31,7 @@ function tokenize(code) {
         throw new Error('Code must start with "hi didi" and end with "bye didi".');
     }
     var tokens = [];
-    var regex = /(didi ye function|hi didi|bye didi|jab tak didi|agar didi|warna didi|warna agar didi|bol didi|didi ye hai|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+(\.\d+)?|==|<=|>=|!=|\/\/.*|\/\*[\s\S]*?\*\/|\+|-|\*|\/|%|\(|\)|\{|\}|,/g;
+    var regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|bol didi|didi ye hai|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+(\.\d+)?|==|<=|>=|!=|\+|-|\*|\/|%|\(|\)|\{|\}|,|\/\/.*|\/\*[\s\S]*?\*\//g;
     var match;
     while ((match = regex.exec(code)) !== null) {
         var token = {
@@ -43,21 +41,9 @@ function tokenize(code) {
         if (didiDict[token.value]) {
             token.type = didiDict[token.value];
         }
-        else if (['sahi', 'galat', 'nalla'].includes(token.value)) {
-            token.type = 'boolean';
-            token.value = token.value === 'sahi' ? true : (token.value === 'galat' ? false : null);
-        }
         else if (/^".*"$/.test(token.value)) {
             token.type = 'string';
             token.value = token.value.slice(1, -1);
-        }
-        else if (/^\/\/.*/.test(token.value)) {
-            token.type = 'comment';
-            token.value = token.value.slice(2).trim();
-        }
-        else if (/^\/\*[\s\S]*?\*\/$/.test(token.value)) {
-            token.type = 'multiline_comment';
-            token.value = token.value.slice(2, -2).trim();
         }
         else if (/[a-zA-Z_]\w*/.test(token.value)) {
             if (variables[token.value]) {
@@ -69,6 +55,12 @@ function tokenize(code) {
         }
         else if (/\d+(\.\d+)?/.test(token.value)) {
             token.type = 'number';
+        }
+        else if (/\/\/.*/.test(token.value)) {
+            token.type = 'comment';
+        }
+        else if (/\/\*[\s\S]*?\*\//.test(token.value)) {
+            token.type = 'multiline_comment';
         }
         else if (/==|<=|>=|!=/.test(token.value)) {
             token.type = 'comparison_operator';
