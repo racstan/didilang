@@ -94,7 +94,7 @@ function interpretExpression(expression: Token[] | Token, variables: VariableMap
                 stack.push(token.value);
                 break;
             case 'boolean':
-                stack.push(token.value === 'true' || token.value !== 'galat');
+                stack.push(token.value === 'true');
                 break;
             case 'arithmetic_operator':
             case 'operator':
