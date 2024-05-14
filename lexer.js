@@ -34,60 +34,58 @@ function tokenize(code) {
     var regex = /(hi didi|bye didi|jab tak didi|agar didi|warna didi|bol didi|didi ye hai|nalla|sahi|galat|array|object)|"((?:\\.|[^"\\])*)"|[a-zA-Z_]\w*|\d+(\.\d+)?|==|<=|>=|!=|\+|-|\*|\/|%|\(|\)|\{|\}|,|\/\/.*|\/\*[\s\S]*?\*\//g;
     var match;
     while ((match = regex.exec(code)) !== null) {
-        var token = {
-            type: 'unknown',
-            value: match[0],
-        };
-        if (didiDict[token.value]) {
-            token.type = didiDict[token.value];
-            if (token.value === "sahi" || token.value === "galat") {
-                token.type = 'boolean';
-                token.value = didiDict[token.value]; // Map to "true" or "false"
+        var tokenValue = match[0];
+        var tokenType = 'unknown';
+        if (didiDict[tokenValue]) {
+            tokenType = didiDict[tokenValue];
+            if (tokenValue === "sahi" || tokenValue === "galat") {
+                tokenType = 'boolean';
+                tokenValue = tokenValue === "sahi"; // Simplified to directly assign true or false
             }
         }
-        else if (/^".*"$/.test(token.value)) {
-            token.type = 'string';
-            token.value = token.value.slice(1, -1);
+        else if (/^".*"$/.test(tokenValue)) {
+            tokenType = 'string';
+            tokenValue = tokenValue.slice(1, -1);
         }
-        else if (/[a-zA-Z_]\w*/.test(token.value)) {
-            if (variables[token.value]) {
-                token.type = 'variable';
+        else if (/[a-zA-Z_]\w*/.test(tokenValue)) {
+            if (variables[tokenValue]) {
+                tokenType = 'variable';
             }
             else {
-                token.type = 'identifier';
+                tokenType = 'identifier';
             }
         }
-        else if (/\d+(\.\d+)?/.test(token.value)) {
-            token.type = 'number';
+        else if (/\d+(\.\d+)?/.test(tokenValue)) {
+            tokenType = 'number';
         }
-        else if (/\/\/.*/.test(token.value)) {
-            token.type = 'comment';
+        else if (/\/\/.*/.test(tokenValue)) {
+            tokenType = 'comment';
         }
-        else if (/\/\*[\s\S]*?\*\//.test(token.value)) {
-            token.type = 'multiline_comment';
+        else if (/\/\*[\s\S]*?\*\//.test(tokenValue)) {
+            tokenType = 'multiline_comment';
         }
-        else if (/==|<=|>=|!=/.test(token.value)) {
-            token.type = 'comparison_operator';
+        else if (/==|<=|>=|!=/.test(tokenValue)) {
+            tokenType = 'comparison_operator';
         }
-        else if (/\+|-|\*|\/|%/.test(token.value)) {
-            token.type = 'arithmetic_operator';
+        else if (/\+|-|\*|\/|%/.test(tokenValue)) {
+            tokenType = 'arithmetic_operator';
         }
-        else if (/=/.test(token.value)) {
-            token.type = 'assignment_operator';
+        else if (/=/.test(tokenValue)) {
+            tokenType = 'assignment_operator';
         }
-        else if (/\(|\)|\{|\}|,/.test(token.value)) {
-            token.type = 'delimiter';
+        else if (/\(|\)|\{|\}|,/.test(tokenValue)) {
+            tokenType = 'delimiter';
         }
-        else if (/[\r\n]+/.test(token.value)) {
-            token.type = 'newline';
+        else if (/[\r\n]+/.test(tokenValue)) {
+            tokenType = 'newline';
         }
-        else if (/\s+/.test(token.value)) {
-            token.type = 'whitespace';
+        else if (/\s+/.test(tokenValue)) {
+            tokenType = 'whitespace';
         }
-        if (token.type === 'unknown') {
-            throw new Error("Unknown token: ".concat(token.value));
+        if (tokenType === 'unknown') {
+            throw new Error("Unknown token: ".concat(tokenValue));
         }
-        tokens.push(token);
+        tokens.push({ type: tokenType, value: tokenValue });
     }
     return tokens;
 }
