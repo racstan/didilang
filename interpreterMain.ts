@@ -15,20 +15,19 @@ interface VariableMap {
     [key: string]: any;
 }
 
-export function interpret(ast: Statement[]): any[] {
+export function interpret(ast: Statement[], variables: VariableMap = {}): any[] {
     let output: any[] = [];
-    let variables: VariableMap = {};
 
     for (const statement of ast) {
         try {
             switch (statement.type) {
                 case 'assignment':
-                    if (!statement.variable || !statement.expression)
+                    if (!statement.variable || statement.expression === undefined)
                         throw new Error('Invalid assignment statement');
                     variables[statement.variable] = interpretExpression(statement.expression, variables);
                     break;
                 case 'output':
-                    if (!statement.expression)
+                    if (statement.expression === undefined)
                         throw new Error('Invalid output statement');
                     output.push(interpretExpression(statement.expression, variables));
                     break;
@@ -36,39 +35,15 @@ export function interpret(ast: Statement[]): any[] {
                     if (!statement.condition || !statement.trueBranch)
                         throw new Error('Invalid conditional statement');
                     if (interpretExpression(statement.condition, variables)) {
-                        output.push(...interpret(statement.trueBranch));
+                        output = output.concat(interpret(statement.trueBranch, variables));
                     } else if (statement.falseBranch) {
-                        output.push(...interpret(statement.falseBranch));
+                        output = output.concat(interpret(statement.falseBranch, variables));
                     }
                     break;
                 case 'block':
                     if (!statement.statements)
                         throw new Error('Invalid block statement');
-                    for (const innerStatement of statement.statements) {
-                        switch (innerStatement.type) {
-                            case 'assignment':
-                                if (!innerStatement.variable || !innerStatement.expression)
-                                    throw new Error('Invalid assignment statement');
-                                variables[innerStatement.variable] = interpretExpression(innerStatement.expression, variables);
-                                break;
-                            case 'output':
-                                if (!innerStatement.expression)
-                                    throw new Error('Invalid output statement');
-                                output.push(interpretExpression(innerStatement.expression, variables));
-                                break;
-                            case 'conditional':
-                                if (!innerStatement.condition || !innerStatement.trueBranch)
-                                    throw new Error('Invalid conditional statement');
-                                if (interpretExpression(innerStatement.condition, variables)) {
-                                    output.push(...interpret(innerStatement.trueBranch));
-                                } else if (innerStatement.falseBranch) {
-                                    output.push(...interpret(innerStatement.falseBranch));
-                                }
-                                break;
-                            default:
-                                throw new Error(`Unknown inner statement type: ${innerStatement.type}`);
-                        }
-                    }
+                    output = output.concat(interpret(statement.statements, variables));
                     break;
                 default:
                     throw new Error(`Unknown statement type: ${statement.type}`);
@@ -80,7 +55,11 @@ export function interpret(ast: Statement[]): any[] {
     return output;
 }
 
-function interpretExpression(expression: Token[], variables: VariableMap): any {
+function interpretExpression(expression: Token[] | Token, variables: VariableMap): any {
+    if (!Array.isArray(expression)) {
+        expression = [expression];
+    }
+
     let stack: any[] = [];
     const precedence: { [key: string]: number } = {
         '+': 1,

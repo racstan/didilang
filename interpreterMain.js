@@ -2,20 +2,20 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.interpret = void 0;
 var operatorUtils_1 = require("./operatorUtils");
-function interpret(ast) {
+function interpret(ast, variables) {
+    if (variables === void 0) { variables = {}; }
     var output = [];
-    var variables = {};
     for (var _i = 0, ast_1 = ast; _i < ast_1.length; _i++) {
         var statement = ast_1[_i];
         try {
             switch (statement.type) {
                 case 'assignment':
-                    if (!statement.variable || !statement.expression)
+                    if (!statement.variable || statement.expression === undefined)
                         throw new Error('Invalid assignment statement');
                     variables[statement.variable] = interpretExpression(statement.expression, variables);
                     break;
                 case 'output':
-                    if (!statement.expression)
+                    if (statement.expression === undefined)
                         throw new Error('Invalid output statement');
                     output.push(interpretExpression(statement.expression, variables));
                     break;
@@ -23,42 +23,16 @@ function interpret(ast) {
                     if (!statement.condition || !statement.trueBranch)
                         throw new Error('Invalid conditional statement');
                     if (interpretExpression(statement.condition, variables)) {
-                        output.push.apply(output, interpret(statement.trueBranch));
+                        output = output.concat(interpret(statement.trueBranch, variables));
                     }
                     else if (statement.falseBranch) {
-                        output.push.apply(output, interpret(statement.falseBranch));
+                        output = output.concat(interpret(statement.falseBranch, variables));
                     }
                     break;
                 case 'block':
                     if (!statement.statements)
                         throw new Error('Invalid block statement');
-                    for (var _a = 0, _b = statement.statements; _a < _b.length; _a++) {
-                        var innerStatement = _b[_a];
-                        switch (innerStatement.type) {
-                            case 'assignment':
-                                if (!innerStatement.variable || !innerStatement.expression)
-                                    throw new Error('Invalid assignment statement');
-                                variables[innerStatement.variable] = interpretExpression(innerStatement.expression, variables);
-                                break;
-                            case 'output':
-                                if (!innerStatement.expression)
-                                    throw new Error('Invalid output statement');
-                                output.push(interpretExpression(innerStatement.expression, variables));
-                                break;
-                            case 'conditional':
-                                if (!innerStatement.condition || !innerStatement.trueBranch)
-                                    throw new Error('Invalid conditional statement');
-                                if (interpretExpression(innerStatement.condition, variables)) {
-                                    output.push.apply(output, interpret(innerStatement.trueBranch));
-                                }
-                                else if (innerStatement.falseBranch) {
-                                    output.push.apply(output, interpret(innerStatement.falseBranch));
-                                }
-                                break;
-                            default:
-                                throw new Error("Unknown inner statement type: ".concat(innerStatement.type));
-                        }
-                    }
+                    output = output.concat(interpret(statement.statements, variables));
                     break;
                 default:
                     throw new Error("Unknown statement type: ".concat(statement.type));
@@ -72,6 +46,9 @@ function interpret(ast) {
 }
 exports.interpret = interpret;
 function interpretExpression(expression, variables) {
+    if (!Array.isArray(expression)) {
+        expression = [expression];
+    }
     var stack = [];
     var precedence = {
         '+': 1,
