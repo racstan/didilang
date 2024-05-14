@@ -26,21 +26,23 @@ function applyOperator(operator, operand1, operand2) {
         case '**':
             return Math.pow(operand1, operand2);
         case '>':
-            return operand1 > operand2 ? 1 : 0;
+            return operand1 > operand2;
         case '<':
-            return operand1 < operand2 ? 1 : 0;
+            return operand1 < operand2;
         case '==':
-            return operand1 == operand2 ? 1 : 0;
+            return operand1 == operand2;
         case '!=':
-            return operand1 != operand2 ? 1 : 0;
+            return operand1 != operand2;
         case '>=':
-            return operand1 >= operand2 ? 1 : 0;
+            return operand1 >= operand2;
         case '<=':
-            return operand1 <= operand2 ? 1 : 0;
+            return operand1 <= operand2;
         case '&&':
-            return (operand1 !== 0 && operand2 !== 0) ? 1 : 0;
+            // Adjusted to directly return boolean values
+            return !!operand1 && !!operand2;
         case '||':
-            return (operand1 !== 0 || operand2 !== 0) ? 1 : 0;
+            // Adjusted to directly return boolean values
+            return !!operand1 || !!operand2;
         default:
             throw new Error("Operator ".concat(operator, " is not supported"));
     }
