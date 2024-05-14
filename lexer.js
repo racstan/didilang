@@ -40,6 +40,10 @@ function tokenize(code) {
         };
         if (didiDict[token.value]) {
             token.type = didiDict[token.value];
+            if (token.value === "sahi" || token.value === "galat") {
+                token.type = 'boolean';
+                token.value = didiDict[token.value]; // Map to "true" or "false"
+            }
         }
         else if (/^".*"$/.test(token.value)) {
             token.type = 'string';
