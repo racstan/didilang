@@ -83,7 +83,7 @@ function interpretExpression(expression, variables) {
                 stack.push(token.value);
                 break;
             case 'boolean':
-                stack.push(token.value === 'true');
+                stack.push(token.value === 'true' || token.value !== 'galat');
                 break;
             case 'arithmetic_operator':
             case 'operator':
