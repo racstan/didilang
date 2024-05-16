@@ -47,7 +47,7 @@ export function tokenize(code: string): Token[] {
             tokenType = didiDict[tokenValue];
             if (tokenValue === "sahi" || tokenValue === "galat") {
                 tokenType = 'boolean';
-                tokenValue = tokenValue === "sahi"; // Simplified to directly assign true or false
+                tokenValue = tokenValue === "sahi" ? true : false; // Explicitly handle 'false' as boolean
             }
         } else if (/^".*"$/.test(tokenValue)) {
             tokenType = 'string';
