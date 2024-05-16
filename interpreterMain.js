@@ -75,8 +75,7 @@ function interpretExpression(expression, variables) {
             case 'variable':
             case 'identifier':
                 if (variables[token.value] === undefined) {
-                    console.error("Variable ".concat(token.value, " is not defined. Initializing with null."));
-                    variables[token.value] = null; // Initialize undefined variables with null
+                    throw new Error("Variable ".concat(token.value, " is not defined. Please declare and initialize the variable before use."));
                 }
                 stack.push(variables[token.value]);
                 break;

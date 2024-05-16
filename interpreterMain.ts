@@ -86,8 +86,7 @@ function interpretExpression(expression: Token[] | Token, variables: VariableMap
             case 'variable':
             case 'identifier':
                 if (variables[token.value] === undefined) {
-                    console.error(`Variable ${token.value} is not defined. Initializing with null.`);
-                    variables[token.value] = null; // Initialize undefined variables with null
+                    throw new Error(`Variable ${token.value} is not defined. Please declare and initialize the variable before use.`);
                 }
                 stack.push(variables[token.value]);
                 break;
