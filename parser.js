@@ -6,18 +6,18 @@ function parse(tokens) {
         throw new Error('No tokens to parse');
     }
     var ast = [];
-    var currentBlock;
+    var currentBlock; // Change ASTNode[] to Block for type consistency
     var currentStatement;
     var currentField = '';
     for (var _i = 0, tokens_1 = tokens; _i < tokens_1.length; _i++) {
         var token = tokens_1[_i];
         switch (token.type) {
             case 'start':
-                currentBlock = [];
+                currentBlock = { type: 'block', statements: [] }; // Initialize as a Block directly
                 break;
             case 'end':
                 if (currentBlock) {
-                    ast.push({ type: 'block', statements: currentBlock });
+                    ast.push(currentBlock); // Push the currentBlock directly
                     currentBlock = undefined;
                 }
                 else {
@@ -27,7 +27,7 @@ function parse(tokens) {
             case 'variable':
                 currentStatement = { type: 'assignment', variable: '', expression: [] };
                 if (currentBlock) {
-                    currentBlock.push(currentStatement);
+                    currentBlock.statements.push(currentStatement); // Use currentBlock.statements
                 }
                 else {
                     throw new Error('Variable statement not within a block');
@@ -37,7 +37,7 @@ function parse(tokens) {
             case 'print':
                 currentStatement = { type: 'output', expression: [] };
                 if (currentBlock) {
-                    currentBlock.push(currentStatement);
+                    currentBlock.statements.push(currentStatement); // Use currentBlock.statements
                 }
                 else {
                     throw new Error('Print statement not within a block');
@@ -47,7 +47,7 @@ function parse(tokens) {
             case 'conditional':
                 currentStatement = { type: 'conditional', condition: [], trueBranch: [], falseBranch: [] };
                 if (currentBlock) {
-                    currentBlock.push(currentStatement);
+                    currentBlock.statements.push(currentStatement); // Use currentBlock.statements
                 }
                 else {
                     throw new Error('Conditional statement not within a block');
