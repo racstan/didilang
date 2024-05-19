@@ -94,7 +94,13 @@ function interpretExpression(expression: Token[] | Token, variables: VariableMap
                 stack.push(token.value);
                 break;
             case 'boolean':
-                stack.push(token.value === 'true');
+                if (token.value === 'sahi') {
+                    stack.push(true);
+                } else if (token.value === 'galat') {
+                    stack.push(false);
+                } else {
+                    throw new Error(`Unknown boolean value: ${token.value}`);
+                }
                 break;
             case 'arithmetic_operator':
             case 'operator':
