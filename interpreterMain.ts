@@ -100,7 +100,7 @@ function interpretExpression(expression: Token[] | Token, variables: VariableMap
                     stack.push(false);
                 } else {
                     throw new Error(`Unknown boolean value: ${token.value}`);
-                }
+                }  
                 break;
             case 'arithmetic_operator':
             case 'operator':
